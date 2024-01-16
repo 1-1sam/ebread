@@ -1,5 +1,5 @@
 # ebread
-**ebread** is a Linux program that converts the XHTML conents of EPUB ebook
+**ebread** is a Unix program that converts the XHTML conents of EPUB ebook
 archives into formatted plaintext. Run `ebread -h` or `man 1 ebread` for
 information on how to use **ebread**.
 
