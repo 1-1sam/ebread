@@ -231,8 +231,7 @@ ebread_init(int argc, char** argv) {
 			ebread.output_dir = optarg;
 			break;
 		case 'n':
-			ebread.output_name = optarg;
-			if (strchr(ebread.output_name, '/') != NULL) {
+			if (strchr(ebread.output_name = optarg, '/') != NULL) {
 				fprintf(stderr, "Filename contains '/': %s\n",
 					ebread.output_name);
 				ebread.run_state = ERROR;

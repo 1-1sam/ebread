@@ -58,13 +58,13 @@ uz_rm_tree(char* path) {
 	while ((cur = fts_read(fts)) != NULL) {
 
 		switch (cur->fts_info) {
-			case FTS_DP:
-			case FTS_DNR:
-				rmdir(cur->fts_accpath);
-				break;
-			default:
-				unlink(cur->fts_accpath);
-				break;
+		case FTS_DP:
+		case FTS_DNR:
+			rmdir(cur->fts_accpath);
+			break;
+		default:
+			unlink(cur->fts_accpath);
+			break;
 		}
 
 	}
