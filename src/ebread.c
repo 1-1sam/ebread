@@ -215,50 +215,54 @@ ebread_init(int argc, char** argv) {
 
 	while ((c = getopt_long(argc, argv, "1:i:l:od:n:xVhuv", opts, NULL)) != -1) {
 		switch (c) {
-			case '1':
-				ebread.single_output_file = optarg;
-				break;
-			case 'i':
-				ebread.indent = strtoul(optarg, NULL, 10);
-				break;
-			case 'l':
-				ebread.linelen = strtoul(optarg, NULL, 10);
-				break;
-			case 'o':
-				ebread.stdout = 1;
-				break;
-			case 'd':
-				ebread.output_dir = optarg;
-				break;
-			/* TODO: Perform check to make sure output_name is a valid file name. */
-			case 'n':
-				ebread.output_name = optarg;
-				break;
-			case 'x':
-				ebread.mode = UNZIP;
-				break;
-			case 'V':
-				ebread.verbose = 1;
-				break;
-			case 'h':
-				_print_help();
-				ebread.run_state = NORUN;
-				return ebread;
-			case 'u':
-				_print_usage();
-				ebread.run_state = NORUN;
-				return ebread;
-			case 'v':
-				_print_version();
-				ebread.run_state = NORUN;
-				return ebread;
-			case '?':
+		case '1':
+			ebread.single_output_file = optarg;
+			break;
+		case 'i':
+			ebread.indent = strtoul(optarg, NULL, 10);
+			break;
+		case 'l':
+			ebread.linelen = strtoul(optarg, NULL, 10);
+			break;
+		case 'o':
+			ebread.stdout = 1;
+			break;
+		case 'd':
+			ebread.output_dir = optarg;
+			break;
+		case 'n':
+			ebread.output_name = optarg;
+			if (strchr(ebread.output_name, '/') != NULL) {
+				fprintf(stderr, "Filename contains '/': %s\n",
+					ebread.output_name);
 				ebread.run_state = ERROR;
-				return ebread;
-			default:
-				fprintf(stderr, "Error parsing options\n");
-				ebread.run_state = ERROR;
-				return ebread;
+			}
+			break;
+		case 'x':
+			ebread.mode = UNZIP;
+			break;
+		case 'V':
+			ebread.verbose = 1;
+			break;
+		case 'h':
+			_print_help();
+			ebread.run_state = NORUN;
+			return ebread;
+		case 'u':
+			_print_usage();
+			ebread.run_state = NORUN;
+			return ebread;
+		case 'v':
+			_print_version();
+			ebread.run_state = NORUN;
+			return ebread;
+		case '?':
+			ebread.run_state = ERROR;
+			return ebread;
+		default:
+			fprintf(stderr, "Error parsing options\n");
+			ebread.run_state = ERROR;
+			return ebread;
 		}
 	}
 
