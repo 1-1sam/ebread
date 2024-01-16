@@ -19,10 +19,6 @@ struct spine {
 	int hrefnum;
 };
 
-/* TODO: Check for...
- * - Cannot find rootfile
- */
-
 int
 xml_get_rootfile(char* rootfile, char* rootdir) {
 
