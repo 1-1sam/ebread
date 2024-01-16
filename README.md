@@ -1,13 +1,15 @@
 # ebread
-**ebread** is a program that converts the XHTML conents of EPUB ebook archives
-into formatted plaintext. Run `ebread -h` or `man 1 ebread` for information on
-how to use **ebread**.
+**ebread** is a Linux program that converts the XHTML conents of EPUB ebook
+archives into formatted plaintext. Run `ebread -h` or `man 1 ebread` for
+information on how to use **ebread**.
 
 ## Building
 Building **ebread** requires the following:
 * A C compiler
 * make
 * libxml2
+
+**ebread** can be built on most Linux distributions and BSDs.
 
 To build and install **ebread**, run the following:
 ```bash
