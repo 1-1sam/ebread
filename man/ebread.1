@@ -1,0 +1,64 @@
+.Dd $Mdocdate: January 15 2023 $
+.Dt EBREAD 1
+.Os
+.Sh NAME
+.Nm ebread
+.Nd EPUB-to-plaintext converter
+.Sh SYNOPSIS
+.Nm ebread
+.Op Fl oxVhuv
+.Op Fl 1 Ar file
+.Op Fl d Ar dir
+.Op Fl n Ar name
+.Op Fl i Ar num
+.Op Fl l Ar num
+.Ar EPUB
+.Sh DESCRIPTION
+.Nm
+is a program that converts the XHTML contents of EPUB ebook archives into
+formatted plaintext.
+.Pp
+.Nm
+has the following options:
+.Bl -tag -width Ds
+.It Fl 1 Ar <file>, Fl \-single-file Ns = Ns Ar <file>
+Write the converted output to
+.Ar file.
+.It Fl d Ar <dir>, Fl \-output-directory Ns = Ns Ar <dir>
+Place the converted output into
+.Ar dir.
+.It Fl n Ar <name>, Fl \-name Ns = Ns Ar <name>
+Name the output files
+.Ar name.
+A numerical suffix is added inbetween the initial portion of
+.Ar name
+and its file extension. If there is no extension, the suffix is just added to
+the end.
+.It Fl i Ar <num>, Fl \-indent Ns = Ns Ar <num>
+Set the output indent size to
+.Ar num.
+The default size is 4.
+.It Fl l Ar <num>, Fl \-line-length Ns = Ns Ar <num>
+Set the output line length to
+.Ar num.
+.It Fl o, Fl \-stdout
+Write output to stdout.
+.It Fl x, Fl \-extract
+Extract the contents of
+.Ar EPUB
+and do no parsing.
+.Fl d
+can be used to set the extract directory.
+.It Fl V, Fl \-verbose
+Enable verbose output.
+.It Fl h, Fl \-help
+Print help message.
+.It Fl u, Fl \-usage
+Print usage message.
+.It Fl v, Fl \-version
+Print program version.
+.Sh AUTHORS
+Written by Samuel Young.
+.Sh BUGS
+Probably some. Report them on my Codeberg,
+.Em https://codeberg.org/1-1sam
