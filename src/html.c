@@ -1,5 +1,3 @@
-/* TODO: Switch from strcat to safe strncats */
-/* TODO: Give the functions better names */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -138,8 +136,6 @@ _add_indent(char* line, int indent) {
 
 }
 
-/* TODO: Cleaner code :-) */
-/* TODO: Clean up valgrind memory errors. */
 /*
  * If this returns a parsed_html with a content_num of -1, that means something
  * went wrong.
