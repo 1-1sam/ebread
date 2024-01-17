@@ -144,7 +144,7 @@ struct parsed_html
 html_parse(char* html) {
 
 	struct parsed_html parsed;
-	FILE* html_file = fopen(html, "r");
+	FILE* html_file;
 	char* linebuf = NULL;
 	size_t linelen;
 	int cur = 0;
@@ -165,6 +165,8 @@ html_parse(char* html) {
 		parsed.content_num = -1;
 		return parsed;
 	}
+
+	html_file = fopen(html, "r");
 
 	parsed.content[cur].type = UNKNOWN;
 	parsed.content[cur].text = NULL;
