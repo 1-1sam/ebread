@@ -1,4 +1,4 @@
-.Dd $Mdocdate: January 15 2023 $
+.Dd $Mdocdate: January 17 2024 $
 .Dt EBREAD 1
 .Os
 .Sh NAME
@@ -46,6 +46,9 @@ The default size is 4.
 .It Fl l Ar <num>, Fl \-line-length Ns = Ns Ar <num>
 Set the output line length to
 .Ar num.
+The default length is 80. Please note that the length of the indent contributes
+to the length of a line (eg a line length of 80 and an indent of 4 would mean
+that the actual text would have a max line length of 76).
 .It Fl o, Fl \-stdout
 Write output to stdout.
 .It Fl x, Fl \-extract
