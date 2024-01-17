@@ -153,6 +153,7 @@ html_parse(char* html) {
 
 	parsed.content_num = _get_content_num(html);
 
+	/* Nothing went wrong, this just means this page is blank. */
 	if (parsed.content_num == 0) {
 		return parsed;
 	}
@@ -173,15 +174,14 @@ html_parse(char* html) {
 
 		char *tag_start, *tag_end, *text_start;
 
+		/* Newlines and tabs will be replaced with spaces; easier to format. */
 		for (char* p = linebuf; *p != '\0'; p++) {
 			if (*p == '\n' || *p == '\t') {
 				*p = ' ';
 			}
 		}
 
-		tag_start = strchr(linebuf, '<');
-
-		if (tag_start == NULL) {
+		if ((tag_start = strchr(linebuf, '<')) == NULL) {
 			continue;
 		}
 
@@ -194,62 +194,59 @@ html_parse(char* html) {
 		}
 
 		if (parsed.content[cur].type == UNKNOWN) {
-
 			*tag_end = '\0';
-
 			parsed.content[cur].type = _get_html_content_type(tag_start);
+			continue;
+		}
 
-		} else {
 
-			text_start = linebuf;
-			*(tag_start - 1) = '\0';
+		text_start = linebuf;
+		*(tag_start - 1) = '\0';
 
-			/* This gets rid of any leading white space. */
-			while (*text_start == ' ') {
-				text_start++;
-			}
+		/* This gets rid of any leading white space. */
+		while (*text_start == ' ') {
+			text_start++;
+		}
 
-			prevlen = curlen - 1;
-			curlen += strlen(text_start) + 1;
+		prevlen = curlen - 1;
+		curlen += strlen(text_start) + 1;
 
-			parsed.content[cur].text = realloc(parsed.content[cur].text,
-				sizeof(char) * curlen);
+		parsed.content[cur].text = realloc(parsed.content[cur].text,
+			sizeof(char) * curlen);
 
-			/* TODO: Properly clean up allocated memory */
-			if (parsed.content[cur].text == NULL) {
-				fprintf(stderr, "Failed to allocate memory\n");
-				parsed.content = NULL;
-				parsed.content_num = -1;
-				return parsed;
-			}
+		/* TODO: Properly clean up allocated memory */
+		if (parsed.content[cur].text == NULL) {
+			fprintf(stderr, "Failed to allocate memory\n");
+			parsed.content = NULL;
+			parsed.content_num = -1;
+			return parsed;
+		}
 
-			/* Initialize the new memory provided by realloc */
-			for (int i = prevlen; i < curlen; i++) {
-				parsed.content[cur].text[i] = 0;
-			}
+		/* Initialize the new memory provided by realloc */
+		for (int i = prevlen; i < curlen; i++) {
+			parsed.content[cur].text[i] = 0;
+		}
 
-			strcat(parsed.content[cur].text, text_start);
+		strcat(parsed.content[cur].text, text_start);
 
-			*tag_end = '\0';
+		*tag_end = '\0';
 
-			if (cur + 1 >= parsed.content_num) {
-				break;
-			}
+		if (cur + 1 >= parsed.content_num) {
+			break;
+		}
 
-			if (_get_html_content_type(tag_start) == BREAK) {
-				parsed.content[cur++].linebreak = 1;
-				parsed.content[cur].type = parsed.content[cur - 1].type;
-				parsed.content[cur].text = NULL;
-				parsed.content[cur].linebreak = 0;
-				curlen = 1;
-			} else if (_is_end_tag(tag_start, parsed.content[cur].type)) {
-				cur++;
-				parsed.content[cur].type = UNKNOWN;
-				parsed.content[cur].text = NULL;
-				parsed.content[cur].linebreak = 0;
-				curlen = 1;
-			}
-
+		if (_get_html_content_type(tag_start) == BREAK) {
+			parsed.content[cur++].linebreak = 1;
+			parsed.content[cur].type = parsed.content[cur - 1].type;
+			parsed.content[cur].text = NULL;
+			parsed.content[cur].linebreak = 0;
+			curlen = 1;
+		} else if (_is_end_tag(tag_start, parsed.content[cur].type)) {
+			cur++;
+			parsed.content[cur].type = UNKNOWN;
+			parsed.content[cur].text = NULL;
+			parsed.content[cur].linebreak = 0;
+			curlen = 1;
 		}
 
 	}
@@ -295,6 +292,7 @@ html_write_to_text(char* output, struct parsed_html html, int linelen,
 		while ((lp += strspn(lp, " ")) != null) {
 
 			space = lp + strcspn(lp, " ");
+
 			*space = '\0';
 
 			if (strlen(lp) + strlen(curline) > (size_t) linelen) {
