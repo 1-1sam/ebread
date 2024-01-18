@@ -195,6 +195,9 @@ html_parse(char* html) {
 		if (parsed.content[cur].type == UNKNOWN) {
 			*tag_end = '\0';
 			parsed.content[cur].type = _get_html_content_type(tag_start);
+			if (parsed.content[cur].type == BREAK) {
+				parsed.content[cur].type = UNKNOWN;
+			}
 			continue;
 		}
 
