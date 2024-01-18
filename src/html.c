@@ -19,6 +19,7 @@ struct html_tag {
 
 static struct html_tag tags[] = {
 	{ PARAGRAPH, "p" },
+	{ PARAGRAPH, "td" },
 	{ HEADER, "h1" },
 	{ HEADER, "h2" },
 	{ HEADER, "h3" },
@@ -213,7 +214,7 @@ html_parse(char* html) {
 		curlen += strlen(text_start);
 
 		parsed.content[cur].text = realloc(parsed.content[cur].text,
-			sizeof(char) * (curlen + 1));
+			sizeof(char) * curlen);
 
 		/* TODO: Properly clean up allocated memory */
 		if (parsed.content[cur].text == NULL) {
