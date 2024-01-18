@@ -436,6 +436,12 @@ ebread_run(struct ebread init) {
 		printf("Deleting temporary extract directory: %s\n", uz_dir);
 	}
 
+/*
+ * TODO:
+ * Sometimes uz_rm_tree never gets to delete the uz_dir when using the -o,
+ * option and piping sometimes, this is because ebread recieves a SIGPIPE. Is
+ * there a way around this?
+ */
 	uz_rm_tree(uz_dir);
 
 	return 0;
