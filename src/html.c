@@ -172,7 +172,7 @@ html_parse(char* html) {
 	parsed.content[cur].text = NULL;
 	parsed.content[cur].linebreak = 0;
 
-	while (getdelim(&linebuf, &linelen,'>', html_file) != -1) {
+	while (getdelim(&linebuf, &linelen, '>', html_file) != -1) {
 
 		char *tag_start, *tag_end, *text_start;
 
@@ -187,10 +187,7 @@ html_parse(char* html) {
 			continue;
 		}
 
-		tag_start++;
-
-		tag_end = tag_start;
-
+		tag_end = ++tag_start;
 		while (*tag_end != ' ' && *tag_end != '>') {
 			tag_end++;
 		}
@@ -201,7 +198,6 @@ html_parse(char* html) {
 			continue;
 		}
 
-
 		text_start = linebuf;
 		*(tag_start - 1) = '\0';
 
@@ -210,11 +206,11 @@ html_parse(char* html) {
 			text_start++;
 		}
 
-		prevlen = curlen - 1;
-		curlen += strlen(text_start) + 1;
+		prevlen = curlen;
+		curlen += strlen(text_start);
 
 		parsed.content[cur].text = realloc(parsed.content[cur].text,
-			sizeof(char) * curlen);
+			sizeof(char) * (curlen + 200));
 
 		/* TODO: Properly clean up allocated memory */
 		if (parsed.content[cur].text == NULL) {
@@ -225,7 +221,7 @@ html_parse(char* html) {
 		}
 
 		/* Initialize the new memory provided by realloc */
-		for (int i = prevlen; i < curlen; i++) {
+		for (int i = prevlen - 1; i < curlen; i++) {
 			parsed.content[cur].text[i] = 0;
 		}
 
