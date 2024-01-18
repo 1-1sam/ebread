@@ -210,7 +210,7 @@ html_parse(char* html) {
 		curlen += strlen(text_start);
 
 		parsed.content[cur].text = realloc(parsed.content[cur].text,
-			sizeof(char) * (curlen + 200));
+			sizeof(char) * (curlen + 1));
 
 		/* TODO: Properly clean up allocated memory */
 		if (parsed.content[cur].text == NULL) {
