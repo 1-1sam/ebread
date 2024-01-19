@@ -14,7 +14,7 @@ Building **ebread** requires the following:
 To build and install **ebread**, run the following:
 ```bash
 make
-make install DESTDIR=/where/ever
+make install # run as root if installing directly into system
 make clean
 ```
 By default, make will look in /usr/include/libxml2 for libxml2 headers. If your
