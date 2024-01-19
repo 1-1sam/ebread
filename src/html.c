@@ -20,6 +20,7 @@ struct html_tag {
 static struct html_tag tags[] = {
 	{ PARAGRAPH, "p" },
 	{ PARAGRAPH, "td" },
+	{ PARAGRAPH, "li" },
 	{ HEADER, "h1" },
 	{ HEADER, "h2" },
 	{ HEADER, "h3" },
