@@ -217,10 +217,14 @@ html_parse(char* html) {
 		parsed.content[cur].text = realloc(parsed.content[cur].text,
 			sizeof(char) * curlen);
 
-		/* TODO: Properly clean up allocated memory */
 		if (parsed.content[cur].text == NULL) {
 			fprintf(stderr, "Failed to allocate memory\n");
-			parsed.content = NULL;
+			for (int i = 0; i < cur; i++) {
+				free(parsed.content[i].text);
+			}
+			free(parsed.content);
+			free(linebuf);
+			fclose(html_file);
 			parsed.content_num = -1;
 			return parsed;
 		}
