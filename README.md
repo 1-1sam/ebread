@@ -17,8 +17,8 @@ make
 make install # run as root if installing directly into system
 make clean
 ```
-By default, make will look in /usr/include/libxml2 for libxml2 headers. If your
-operating system installs them in another location, you may set the
+By default, make will look in `/usr/include/libxml2` for libxml2 headers. If
+your operating system installs them in another location, you may set the
 `libxml_include_dir` variable when building.
 ```bash
 make libxml_include_dir=/path/to/libxml2/headers
