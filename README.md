@@ -9,7 +9,7 @@ Building **ebread** requires the following:
 * make
 * libxml2
 
-**ebread** can be built on most Linux distributions and BSDs.
+**ebread** can be built on most Linux distributions, BSDs and macOS.
 
 To build and install **ebread**, run the following:
 ```bash
