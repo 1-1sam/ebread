@@ -17,6 +17,10 @@ struct html_tag {
 	const char* name;
 };
 
+/*
+ * TODO: br probably shouldn't be here. We shoul find another way of detecting
+ * linebreaks.
+ */
 static struct html_tag tags[] = {
 	{ PARAGRAPH, "p" },
 	{ PARAGRAPH, "td" },
@@ -112,8 +116,12 @@ _get_content_num(char* html) {
 
 		*tag_end = '\0';
 
+
 		if (cur_tag_type == UNKNOWN) {
 			cur_tag_type = _get_html_content_type(tag_start);
+			if (cur_tag_type == BREAK) {
+				cur_tag_type = UNKNOWN;
+			}
 		} else if (_get_html_content_type(tag_start) == BREAK) {
 			rtrn++;
 		} else if (_is_end_tag(tag_start, cur_tag_type)) {
