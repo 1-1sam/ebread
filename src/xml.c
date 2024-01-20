@@ -51,7 +51,7 @@ xml_get_rootfile(char* rootfile, char* rootdir) {
 
 	parsed_rootfile = xmlGetProp(cur, (xmlChar*) "full-path");
 
-	sprintf(rootfile, "%s/%s", rootdir, parsed_rootfile);
+	sprintf(rootfile, "%s%s", rootdir, parsed_rootfile);
 
 	xmlFree(parsed_rootfile);
 	xmlFreeDoc(doc);
