@@ -415,7 +415,7 @@ ebread_run(struct ebread init) {
 		}
 
 		if (init.verbose) {
-			printf("Parsed %s, writing to %s\n", cur_file, cur_out);
+			printf("Writing to %s\n", cur_out);
 		}
 
 		html_write_to_text(cur_out, parsed, init.linelen, init.indent);
