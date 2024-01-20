@@ -29,10 +29,24 @@ typedef int flag_t;
 };
 
 static void
-_print_help(void) {
+_print_usage(void) {
+
+	printf("Usage: ebread [-oxVhuv] [-1 file] [-d dir] [-n name] [-i num] [-l num] EPUB\n");
+
+}
+
+static void
+_print_version(void) {
 
 	printf("ebread - %s\n", EBREAD_VERSION);
-	printf("Usage: ebread [-oxVhuv] [-1 file] [-d dir] [-n name] [-i num] [-l num] EPUB\n\n");
+
+}
+
+static void
+_print_help(void) {
+
+	_print_version();
+	_print_usage();
 	printf("Options:\n");
 	printf(" -1 <file>  --single-file=<file>        Write all output to file.\n");
 	printf(" -d <dir>   --output-directory=<dir>    Place output files in dir.\n");
@@ -45,20 +59,6 @@ _print_help(void) {
 	printf(" -h         --help                      Print this help message.\n");
 	printf(" -u         --usage                     Print usage message.\n");
 	printf(" -v         --version                   Print program version.\n");
-
-}
-
-static void
-_print_usage(void) {
-
-	printf("Usage: ebread [-oxVhuv] [-1 file] [-d dir] [-n name] [-i num] [-l num] EPUB\n");
-
-}
-
-static void
-_print_version(void) {
-
-	printf("ebread - %s\n", EBREAD_VERSION);
 
 }
 
