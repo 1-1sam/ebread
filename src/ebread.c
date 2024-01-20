@@ -62,6 +62,16 @@ _print_help(void) {
 
 }
 
+/*
+ * In PARSE mode, unzipped contents go to /tmp/ebread-XXXXXX.
+ * In UNZIP mode without -d, the unzipped contents will go into a directory
+ * created in your current working directory. The directory will be the name
+ * of the given epub with the .epub extension stripped if it's present. If the
+ * epub has no extension and exists in the current working directory, the output
+ * directory will have the ".d" suffix added to it.
+ * If UNZIP mode with -d, unzipped contents go into where ever the users
+ * wants.
+ */
 static int
 _get_unzip_dir(char* uz_dir, struct ebread ebread) {
 
@@ -100,7 +110,9 @@ _get_unzip_dir(char* uz_dir, struct ebread ebread) {
 
 	}
 
-	strcat(uz_dir, "/");
+	if (*(strchr(uz_dir, '\0') - 1) == '/') {
+		strcat(uz_dir, "/");
+	}
 
 	return 0;
 }
