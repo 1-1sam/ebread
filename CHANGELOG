@@ -1,2 +1,5 @@
-0.1 (??/??/????)
-* Initial release.
+1/15/2024 - 1/20/2024
+Added:
+ - td (table data cells) are parsed as paragraphs.
+ - li (list items) are parsed as paragraphs.
+ - ebread can be compiled with a custom version number.
