@@ -7,7 +7,9 @@
 #include "xml.h"
 #include "html.h"
 
-#define EBREAD_VERSION "0.1"
+#ifndef EBREAD_VERSION
+  #define EBREAD_VERSION "0.1"
+#endif
 
 #define PATHMAX 4096
 
