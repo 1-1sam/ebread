@@ -6,7 +6,7 @@ information on how to use **ebread**.
 ## Building
 Building **ebread** requires the following:
 * A C compiler
-* make
+* GNU make
 * libxml2
 
 **ebread** can be built on most Linux distributions, BSDs and macOS.
