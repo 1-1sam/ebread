@@ -125,6 +125,21 @@ _make_child_node(struct xml_tree_node* parent) {
 
 }
 
+static void
+_free_node(struct xml_tree_node* node) {
+
+	if (node->child != NULL) {
+		_free_node(node->child);
+	}
+
+	if (node->next != NULL) {
+		_free_node(node->next);
+	}
+
+	free(node);
+
+}
+
 struct xml_tree_node*
 build_xml_tree(char* xml) {
 
@@ -191,21 +206,6 @@ build_xml_tree(char* xml) {
 	} while ((curtok = strtok(NULL, "<")) != NULL);
 
 	return head;
-
-}
-
-static void
-_free_node(struct xml_tree_node* node) {
-
-	if (node->child != NULL) {
-		_free_node(node->child);
-	}
-
-	if (node->next != NULL) {
-		_free_node(node->next);
-	}
-
-	free(node);
 
 }
 
