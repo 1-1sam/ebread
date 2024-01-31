@@ -1,159 +1,261 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-
-/* The epub standard states that the root file's path must be here. */
-#define CONTAINER_PATH "META-INF/container.xml"
-
-#define ZIP_PATH_MAX 260
-#define PATHMAX 4096
-#define BUFSIZE 1024
-
-struct spine {
-	char** hrefs;
-	int hrefnum;
+struct xml_tree_node {
+	char* name;
+	struct xml_tree_node* next;
+	struct xml_tree_node* prev;
+	struct xml_tree_node* parent;
+	struct xml_tree_node* child;
+	char* attributes;
+	char* text;
+	char* content_ptr;
 };
 
-int
-xml_get_rootfile(char* rootfile, char* rootdir) {
+/* Used to initialize newly created nodes */
+struct xml_tree_node null_node = {
+	.name = NULL,
+	.next = NULL,
+	.prev = NULL,
+	.parent = NULL,
+	.child = NULL,
+	.attributes = NULL,
+	.text = NULL,
+	.content_ptr = NULL,
+};
 
-	xmlDocPtr doc;
-	xmlNodePtr cur;
-	xmlChar* parsed_rootfile;
-	char container[PATHMAX];
+/* Reads the entire file into a string. */
+char*
+_read_xml_file(char* xml) {
 
-	sprintf(container, "%s/%s", rootdir, CONTAINER_PATH);
+	FILE* xmlf = fopen(xml, "r");
+	long size;
+	char* read;
 
-	doc = xmlParseFile(container);
+	if (xmlf == NULL) {
+		fprintf(stderr, "%s: Could not open\n", xml);
+		return NULL;
+	}
 
-	cur = xmlDocGetRootElement(doc);
+	/* Get the file size */
+	fseek(xmlf, 0, SEEK_END);
+	size = ftell(xmlf);
+	rewind(xmlf);
 
-	cur = cur->children;
+	/* Read the entire file into read and add null terminator */
+	if ((read = malloc(sizeof(char) * size + 1)) == NULL) {
+		fprintf(stderr, "Could not allocate memory\n");
+		fclose(xmlf);
+		return NULL;
+	}
+	fread(read, sizeof(char), size, xmlf);
+	read[size] = '\0';
 
-	while (cur != NULL) {
-		if (xmlStrcmp(cur->name, (xmlChar*) "rootfiles") == 0) {
-			break;
+	for (char* p = read; *p != '\0'; p++) {
+		if (isspace(*p)) {
+			*p = ' ';
 		}
-		cur = cur->next;
 	}
 
-	if (cur == NULL) {
-		xmlFreeDoc(doc);
-		return -1;
+	fclose(xmlf);
+	return read;
+
+}
+
+int
+_is_end_tag(char* tag, struct xml_tree_node* node) {
+
+	if (*tag != '/' || node->name == NULL) {
+		return 0;
 	}
 
-	cur = cur->children->next;
-
-	parsed_rootfile = xmlGetProp(cur, (xmlChar*) "full-path");
-
-	sprintf(rootfile, "%s%s", rootdir, parsed_rootfile);
-
-	xmlFree(parsed_rootfile);
-	xmlFreeDoc(doc);
+	if (strcmp(tag + 1, node->name) == 0) {
+		return 1;
+	}
 
 	return 0;
 
 }
 
-struct spine
-xml_get_spine(char* rootfile) {
+int
+_parse_tag(char* tag, struct xml_tree_node* node) {
 
-	struct spine spine;
-	xmlDocPtr doc;
-	xmlNodePtr cur;
-	xmlNodePtr root_node, spine_node, manifest_node;
-	xmlChar *cur_spine_idref, *cur_manifest_idref;
+	char* name;
+	char* attributes;
 
-	spine.hrefnum = 0;
+	name = tag + strspn(tag, " ");
 
-	doc = xmlParseFile(rootfile);
+	attributes = name + strcspn(tag, " ");
+	attributes += strspn(attributes, " ");
 
-	root_node = xmlDocGetRootElement(doc);
+	*(name + strcspn(name, " ")) = '\0';
 
-	cur = root_node->children;
+	node->name = name;
+	node->attributes = (*attributes != '\0') ? attributes : NULL;
 
-	while (xmlStrcmp(cur->name, (xmlChar*) "manifest") != 0) {
-		if ((cur = cur->next) == NULL) {
-			fprintf(stderr, "Could not find manifest in rootfile\n");
-			xmlFreeDoc(doc);
-			return spine;
+	return 0;
+
+}
+
+struct xml_tree_node*
+_make_child_node(struct xml_tree_node* parent) {
+
+	struct xml_tree_node* rtrn = parent;
+
+	if (rtrn->child == NULL) {
+		rtrn->child = malloc(sizeof(struct xml_tree_node));
+		*(rtrn->child) = null_node;
+		rtrn->child->parent = rtrn;
+		rtrn = rtrn->child;
+	} else {
+		rtrn = rtrn->child;
+		while (rtrn->next != NULL) {
+			rtrn = rtrn->next;
 		}
-	}
-	manifest_node = cur;
-
-	cur = root_node->children;
-
-	while (xmlStrcmp(cur->name, (xmlChar*) "spine") != 0) {
-		if ((cur = cur->next) == NULL) {
-			fprintf(stderr, "Could not find spine in rootfile\n");
-			xmlFreeDoc(doc);
-			return spine;
-		}
-	}
-	spine_node = cur;
-
-	cur = spine_node->children;
-
-	while (cur != NULL) {
-		if (xmlStrcmp(cur->name, (xmlChar*) "itemref") == 0) {
-			spine.hrefnum++;
-		}
-		cur = cur->next;
+		rtrn->next = malloc(sizeof(struct xml_tree_node));
+		*(rtrn->next) = null_node;
+		rtrn->next->prev = rtrn;
+		rtrn->next->parent = rtrn->parent;
+		rtrn = rtrn->next;
 	}
 
-	spine.hrefs = malloc(sizeof(char*) * spine.hrefnum);
+	return rtrn;
 
-	if (spine.hrefs == NULL) {
+}
+
+struct xml_tree_node*
+build_xml_tree(char* xml) {
+
+	struct xml_tree_node* head;
+	char* xml_content;
+	struct xml_tree_node* cur;
+	char* curtok;
+	char *text, *tag;
+
+	if ((xml_content = _read_xml_file(xml)) == NULL) {
+		fprintf(stderr, "%s: Could not parse\n", xml);
+		return NULL;
+	}
+
+	if ((head = malloc(sizeof(struct xml_tree_node))) == NULL) {
 		fprintf(stderr, "Could not allocate memory\n");
-		xmlFreeDoc(doc);
-		return spine;
+		free(xml_content);
+		return NULL;
 	}
 
-	/*
-	 * Get the item's idref, then jump to the manifest to find it's respective
-	 * href.
-	 */
-	for (int i = 0; i < spine.hrefnum; i++) {
+	*head = null_node;
+	head->content_ptr = xml_content;
+	cur = head;
 
-		cur = spine_node->children;
+	curtok = strtok(head->content_ptr, "<");
 
-		for (int j = 0; j <= i; j++) {
-			do {
-				cur = cur->next;
-			} while (xmlStrcmp(cur->name, (xmlChar*) "itemref") != 0);
+	do {
+
+		tag = curtok;
+		text = strchr(tag, '>') + 1;
+		*(text - 1) = '\0';
+
+		while (*text == ' ') {
+			text++;
 		}
 
-		cur_spine_idref = xmlGetProp(cur, (xmlChar*) "idref");
-
-		cur = manifest_node->children;
-
-		while (cur != NULL) {
-			if (xmlStrcmp(cur->name, (xmlChar*) "item") == 0) {
-
-				cur_manifest_idref = xmlGetProp(cur, (xmlChar*) "id");
-
-				if (xmlStrcmp(cur_spine_idref, cur_manifest_idref) == 0) {
-					spine.hrefs[i] = (char*) xmlGetProp(cur, (xmlChar*) "href");
-					xmlFree(cur_manifest_idref);
-					break;
-				}
-
-				xmlFree(cur_manifest_idref);
-			}
-			cur = cur->next;
+		if (*text == '\0') {
+			text = NULL;
 		}
 
-		xmlFree(cur_spine_idref);
+		/* Ignore comments, CDATA, and PIs */
+		if (*tag == '!' || *tag == '?') {
+			;
+		/* Current node has now ended, return to parent */
+		} else if (_is_end_tag(tag, cur)) {
+			cur = cur->parent;
+		/* Single tag node */
+		} else if (*(strchr(tag, '\0') - 1) == '/') {
+			cur = _make_child_node(cur);
+			_parse_tag(tag, cur);
+			cur = cur->parent;
+		/* New child node */
+		} else {
+			cur = _make_child_node(cur);
+			_parse_tag(tag, cur);
+		}
 
+		if (text != NULL) {
+			cur = _make_child_node(cur);
+			cur->text = text;
+			cur = cur->parent;
+		}
+
+	} while ((curtok = strtok(NULL, "<")) != NULL);
+
+	return head;
+
+}
+
+static void
+_free_node(struct xml_tree_node* node) {
+
+	if (node->child != NULL) {
+		_free_node(node->child);
 	}
 
-	xmlFreeDoc(doc);
+	if (node->next != NULL) {
+		_free_node(node->next);
+	}
 
-	return spine;
+	free(node);
+
+}
+
+void
+free_tree(struct xml_tree_node* head) {
+
+	free(head->content_ptr);
+
+	_free_node(head);
+
+}
+
+void
+print_names(struct xml_tree_node* node) {
+
+	if (node->child != NULL) {
+		print_names(node->child);
+	}
+
+	if (node->next != NULL) {
+		print_names(node->next);
+	}
+
+	if (node->text != NULL) {
+		printf("%s\n", node->text);
+	}
+
+}
+
+int
+main(int argc, char** argv) {
+
+	char* xml_name;
+	struct xml_tree_node* head;
+	struct xml_tree_node* cur;
+
+	if (argc != 2) {
+		fprintf(stderr, "Invalid number of arguments\n");
+		return 1;
+	}
+
+	xml_name = argv[1];
+
+	head = build_xml_tree(xml_name);
+
+	print_names(head);
+
+	free_tree(head);
+
+	return 0;
+
 
 }
