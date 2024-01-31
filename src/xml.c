@@ -15,7 +15,7 @@ struct xml_tree_node {
 };
 
 /* Used to initialize newly created nodes */
-struct xml_tree_node null_node = {
+static struct xml_tree_node null_node = {
 	.name = NULL,
 	.next = NULL,
 	.prev = NULL,
@@ -27,7 +27,7 @@ struct xml_tree_node null_node = {
 };
 
 /* Reads the entire file into a string. */
-char*
+static char*
 _read_xml_file(char* xml) {
 
 	FILE* xmlf = fopen(xml, "r");
@@ -64,7 +64,7 @@ _read_xml_file(char* xml) {
 
 }
 
-int
+static int
 _is_end_tag(char* tag, struct xml_tree_node* node) {
 
 	if (*tag != '/' || node->name == NULL) {
@@ -79,7 +79,7 @@ _is_end_tag(char* tag, struct xml_tree_node* node) {
 
 }
 
-int
+static int
 _parse_tag(char* tag, struct xml_tree_node* node) {
 
 	char* name;
@@ -99,7 +99,7 @@ _parse_tag(char* tag, struct xml_tree_node* node) {
 
 }
 
-struct xml_tree_node*
+static struct xml_tree_node*
 _make_child_node(struct xml_tree_node* parent) {
 
 	struct xml_tree_node* rtrn = parent;
@@ -215,47 +215,5 @@ free_tree(struct xml_tree_node* head) {
 	free(head->content_ptr);
 
 	_free_node(head);
-
-}
-
-void
-print_names(struct xml_tree_node* node) {
-
-	if (node->child != NULL) {
-		print_names(node->child);
-	}
-
-	if (node->next != NULL) {
-		print_names(node->next);
-	}
-
-	if (node->text != NULL) {
-		printf("%s\n", node->text);
-	}
-
-}
-
-int
-main(int argc, char** argv) {
-
-	char* xml_name;
-	struct xml_tree_node* head;
-	struct xml_tree_node* cur;
-
-	if (argc != 2) {
-		fprintf(stderr, "Invalid number of arguments\n");
-		return 1;
-	}
-
-	xml_name = argv[1];
-
-	head = build_xml_tree(xml_name);
-
-	print_names(head);
-
-	free_tree(head);
-
-	return 0;
-
 
 }

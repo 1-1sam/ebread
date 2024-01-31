@@ -8,3 +8,7 @@ struct xml_tree_node {
 	char* text;
 	char* content_ptr;
 };
+
+struct xml_tree_node* build_xml_tree(char* xml);
+
+void free_tree(struct xml_tree_node* head);
