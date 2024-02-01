@@ -69,7 +69,7 @@ xml_get_rootfile(char* rootfile, char* rootdir) {
 }
 
 struct spine
-xml_get_spine(char* rootfile, char* rootdir;) {
+xml_get_spine(char* rootfile) {
 
 	struct spine spine;
 	struct xml_tree_node* head;
@@ -126,14 +126,56 @@ xml_get_spine(char* rootfile, char* rootdir;) {
 		return spine;
 	}
 
+
+	cur = spinen->child;
+
 	for (int i = 0; i < spine.hrefnum; i++) {
 
-		cur = spinen->child;
+		struct xml_tree_node* curmanif;
+		char *idref, *href, *id;
 
-		for (int j = 0; j < i; j++) {
-			while (
+		while (_strcmpnul(cur->name, "itemref") != 0) {
+			cur = cur->next;
+		}
+
+		idref = strstr(cur->attributes, "idref");
+		idref = strchr(idref, '"') + 1;
+		*(strchr(idref, '"')) = '\0';
+
+		curmanif = manifn->child;
+
+		while (curmanif != NULL) {
+
+			if (_strcmpnul(curmanif->name, "item") != 0) {
+				curmanif = curmanif->next;
+				continue;
+			}
+
+			id = strstr(curmanif->attributes, "id=");
+			id = strchr(id, '"') + 1;
+			*(strchr(id, '"')) = '\0';
+
+			if (strcmp(idref, id) != 0) {
+				*(strchr(id, '\0')) = '"';
+				curmanif = curmanif->next;
+				continue;
+			}
+
+			*(strchr(id, '\0')) = '"';
+
+			href = strstr(curmanif->attributes, "href");
+			href = strchr(href, '"') + 1;
+			*(strchr(href, '"')) = '\0';
+
+			/* TODO: Check for failed malloc */
+			spine.hrefs[i] = strdup(href);
+
+			*(strchr(href, '\0')) = '"';
+
 		}
 
 	}
+
+	return spine;
 
 }
