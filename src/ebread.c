@@ -4,7 +4,7 @@
 #include <limits.h>
 
 #include "unzip.h"
-#include "xml.h"
+#include "epub-xml.h"
 #include "html.h"
 
 #ifndef EBREAD_VERSION

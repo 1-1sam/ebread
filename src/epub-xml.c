@@ -1,11 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "xml.h"
 
 #define PATHMAX 4096
 
 /* The epub standard states that the root file's path must be here. */
-char* container_path = "META-INF/container.xml";
+static char* container_path = "META-INF/container.xml";
 
 struct spine {
 	char** hrefs;
@@ -40,6 +42,8 @@ xml_get_rootfile(char* rootfile, char* rootdir) {
 
 	head = build_xml_tree(container);
 
+	cur = head;
+
 	while (cur != NULL) {
 		if (_strcmpnul(cur->name, "rootfiles") == 0) {
 			break;
@@ -52,15 +56,20 @@ xml_get_rootfile(char* rootfile, char* rootdir) {
 		return -1;
 	}
 
+	cur = cur->child;
+
 	rf_fullpath = strstr(cur->attributes, "full-path");
 	if (rf_fullpath == NULL) {
 		free_tree(head);
 		return -1;
 	}
-	rf_fullpath = strchr(rf_fullpath, '"');
+	rf_fullpath = strchr(rf_fullpath, '"') + 1;
+	*(strchr(rf_fullpath, '"')) = '\0';
+
+	printf("%s\n", rf_fullpath);
 
 	strcat(rootfile, rootdir);
-	strncat(rootfile, rf_fullpath, strcspn(rf_fullpath, "\"");
+	strncat(rootfile, rf_fullpath, strcspn(rf_fullpath, "\""));
 
 	free_tree(head);
 
@@ -77,7 +86,7 @@ xml_get_spine(char* rootfile) {
 	struct xml_tree_node* spinen = NULL;
 	struct xml_tree_node* manifn = NULL;
 
-	spine.hrefnum;
+	spine.hrefnum = 0;
 
 	head = build_xml_tree(rootfile);
 
@@ -175,6 +184,8 @@ xml_get_spine(char* rootfile) {
 		}
 
 	}
+
+	free_tree(head);
 
 	return spine;
 
