@@ -66,8 +66,6 @@ xml_get_rootfile(char* rootfile, char* rootdir) {
 	rf_fullpath = strchr(rf_fullpath, '"') + 1;
 	*(strchr(rf_fullpath, '"')) = '\0';
 
-	printf("%s\n", rf_fullpath);
-
 	strcat(rootfile, rootdir);
 	strncat(rootfile, rf_fullpath, strcspn(rf_fullpath, "\""));
 
@@ -96,6 +94,7 @@ xml_get_spine(char* rootfile) {
 	/*
 	 * Get pointers to manifest and spine nodes, we'll be hopping between them.
 	 */
+
 	while (cur != NULL) {
 
 		if (_strcmpnul(cur->name, "manifest") == 0) {
@@ -114,8 +113,14 @@ xml_get_spine(char* rootfile) {
 
 	}
 
-	if (cur == NULL) {
-		fprintf(stderr, "Rootfile does not contain all necessary data\n");
+	if (spinen == NULL) {
+		fprintf(stderr, "EPUB's root file does not contain a spine\n");
+		free_tree(head);
+		return spine;
+	}
+
+	if (manifn == NULL) {
+		fprintf(stderr, "EPUB's root file does not contain a manifest\n");
 		free_tree(head);
 		return spine;
 	}
@@ -125,6 +130,7 @@ xml_get_spine(char* rootfile) {
 		if (_strcmpnul(cur->name, "itemref") == 0) {
 			spine.hrefnum++;
 		}
+		cur = cur->next;
 	}
 
 	spine.hrefs = malloc(sizeof(char*) * spine.hrefnum);
@@ -134,7 +140,6 @@ xml_get_spine(char* rootfile) {
 		free_tree(head);
 		return spine;
 	}
-
 
 	cur = spinen->child;
 
@@ -176,10 +181,20 @@ xml_get_spine(char* rootfile) {
 			href = strchr(href, '"') + 1;
 			*(strchr(href, '"')) = '\0';
 
-			/* TODO: Check for failed malloc */
-			spine.hrefs[i] = strdup(href);
+			if ((spine.hrefs[i] = strdup(href)) == NULL) {
+				fprintf(stderr, "Could not allocate memory\n");
+				for (int j = 0; j < i; j++) {
+					free(spine.hrefs[j];
+				}
+				free(spine.hrefs);
+				free_tree(head);
+				spine.hrefs = NULL;
+				return spine;
+			}
 
 			*(strchr(href, '\0')) = '"';
+
+			curmanif = curmanif->next;
 
 		}
 
