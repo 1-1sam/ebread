@@ -306,7 +306,7 @@ ebread_run(struct ebread init) {
 
 	char uz_dir[PATHMAX + 1];
 	char out_dir[PATHMAX + 1];
-	char rootfile[ZIP_PATH_MAX + 1];
+	char rootfile[ZIP_PATH_MAX + 1] = { 0 };
 	struct spine spine;
 	char content_dir[ZIP_PATH_MAX + 1];
 	char cur_file[PATHMAX + 1];

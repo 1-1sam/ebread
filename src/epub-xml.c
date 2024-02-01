@@ -184,7 +184,7 @@ xml_get_spine(char* rootfile) {
 			if ((spine.hrefs[i] = strdup(href)) == NULL) {
 				fprintf(stderr, "Could not allocate memory\n");
 				for (int j = 0; j < i; j++) {
-					free(spine.hrefs[j];
+					free(spine.hrefs[j]);
 				}
 				free(spine.hrefs);
 				free_tree(head);
@@ -197,6 +197,8 @@ xml_get_spine(char* rootfile) {
 			curmanif = curmanif->next;
 
 		}
+
+		cur = cur->next;
 
 	}
 

@@ -1,5 +1,11 @@
-1/15/2024 - 1/20/2024
+1/15/2024 - 2/31/2024
 Added:
  - td (table data cells) are parsed as paragraphs.
  - li (list items) are parsed as paragraphs.
  - ebread can be compiled with a custom version number.
+
+Changed:
+ - Now uses own xml parser rather than libxml2's.
+
+Removed:
+ - libxml2 dependency.
