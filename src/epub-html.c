@@ -29,6 +29,7 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 
 	FILE* outputf;
 	struct xml_tree_node* tree;
+	struct xml_tree_node* cur;
 	char* curline;
 
 	outputf = fopen(output, "a");
@@ -39,7 +40,9 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 
 	tree = build_xml_tree(html);
 
-	for (struct xml_tree_node* cur = tree; cur->traverse != NULL; cur = cur->traverse ) {
+	cur = tree;
+
+	do {
 
 		char* p = cur->text;
 
@@ -83,7 +86,7 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 
 		fprintf(outputf, "\n\n");
 
-	}
+	} while ((cur = cur->traverse) != NULL);
 
 	free(curline);
 	free_tree(tree);
