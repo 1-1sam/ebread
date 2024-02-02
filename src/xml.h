@@ -4,7 +4,7 @@ struct xml_tree_node {
 	struct xml_tree_node* prev;
 	struct xml_tree_node* parent;
 	struct xml_tree_node* child;
-	struct xml_tree_node* preorder;
+	struct xml_tree_node* traverse;
 	char* attributes;
 	char* text;
 	char* content_ptr;
