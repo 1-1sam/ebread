@@ -128,21 +128,6 @@ _make_child_node(struct xml_tree_node* parent) {
 }
 
 static void
-_free_node(struct xml_tree_node* node) {
-
-	if (node->child != NULL) {
-		_free_node(node->child);
-	}
-
-	if (node->next != NULL) {
-		_free_node(node->next);
-	}
-
-	free(node);
-
-}
-
-static void
 _build_traverse_line(struct xml_tree_node* head) {
 
 	struct xml_tree_node *cur, *trav;
