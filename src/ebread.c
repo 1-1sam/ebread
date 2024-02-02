@@ -3,12 +3,12 @@
 #include <getopt.h>
 #include <limits.h>
 
-#include "unzip.h"
+#include "epub-html.h"
 #include "epub-xml.h"
-#include "html.h"
+#include "unzip.h"
 
 #ifndef EBREAD_VERSION
-  #define EBREAD_VERSION "0.1"
+#  define EBREAD_VERSION "0.1"
 #endif
 
 #define PATHMAX 4096
@@ -393,8 +393,6 @@ ebread_run(struct ebread init) {
 
 	for (int i = 0; i < spine.hrefnum; i++) {
 
-		struct parsed_html parsed;
-
 		memset(cur_file, 0, ZIP_PATH_MAX);
 		sprintf(cur_file, "%s/%s", content_dir, spine.hrefs[i]);
 
@@ -403,31 +401,7 @@ ebread_run(struct ebread init) {
 			_get_output_file(init, cur_out, out_dir, spine.hrefs[i]);
 		}
 
-		if (init.verbose) {
-			printf("Parsing %s\n", cur_file);
-		}
-
-		parsed = html_parse(cur_file);
-
-		if (parsed.content_num == -1) {
-			fprintf(stderr, "Error parsing %s\n", init.epub);
-			return 1;
-		}
-
-		if (init.verbose) {
-			printf("Writing to %s\n", cur_out);
-		}
-
-		html_write_to_text(cur_out, parsed, init.linelen, init.indent);
-
-		if (parsed.content_num == 0) {
-			continue;
-		}
-
-		for (int i = 0; i < parsed.content_num; i++) {
-			free(parsed.content[i].text);
-		}
-		free(parsed.content);
+		html_write_to_file(spine.hrefs[i], cur_out);
 
 	}
 
