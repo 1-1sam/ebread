@@ -403,7 +403,7 @@ ebread_run(struct ebread init) {
 			_get_output_file(init, cur_out, out_dir, spine.hrefs[i]);
 		}
 
-		html_write_to_file(cur_file, cur_out);
+		html_write_to_file(cur_file, cur_out, init.linelen, init.indent);
 
 	}
 

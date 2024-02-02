@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "xml.h"
 
@@ -13,24 +15,79 @@ struct html_content {
 	struct html_rules* rules;
 };
 
-int
-html_write_to_file(char* html, char* output) {
+static void
+_add_indent(char* line, int indent) {
 
+	for (int i = 0; i < indent; i++) {
+		strcat(line, " ");
+	}
+
+}
+
+int
+html_write_to_file(char* html, char* output, int linelen, int indent) {
+
+	FILE* outputf;
 	struct xml_tree_node* tree;
-	struct xml_tree_node* cur;
+	char* curline;
+
+	outputf = fopen(output, "a");
+
+	curline = calloc(linelen + 2, sizeof(char));
+
+	_add_indent(curline, indent);
 
 	tree = build_xml_tree(html);
 
-	cur = tree;
+	for (struct xml_tree_node* cur = tree; cur->traverse != NULL; cur = cur->traverse ) {
 
-	while (cur != NULL) {
-		if (cur->text != NULL) {
-			printf("%s\n", cur->text);
+		char* p = cur->text;
+
+		if (p == NULL) {
+			continue;
 		}
-		cur = cur->traverse;
+
+		while (*(p += strspn(p, " ")) != '\0') {
+
+			size_t wordlen = strcspn(p, " ");
+
+			if (wordlen + strlen(curline) > linelen) {
+
+				fprintf(outputf, "%s\n", curline);
+				memset(curline, 0, linelen + 2);
+				_add_indent(curline, indent);
+
+				while (wordlen > linelen - indent) {
+
+					strncat(curline, p, linelen - indent - 1);
+					strcat(curline, "-");
+
+					fprintf(outputf, "%s\n", curline);
+
+					memset(curline, 0, linelen + 2);
+
+					p += linelen - indent - 1;
+					wordlen -= linelen  - indent - 1;
+
+					_add_indent(curline, indent);
+				}
+
+			}
+
+			strncat(curline, p, wordlen);
+			strcat(curline, " ");
+
+			p += strcspn(p, " ");
+
+		}
+
+		fprintf(outputf, "\n\n");
+
 	}
 
+	free(curline);
 	free_tree(tree);
+	fclose(outputf);
 
 	return 0;
 
