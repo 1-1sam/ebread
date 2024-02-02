@@ -94,7 +94,6 @@ xml_get_spine(char* rootfile) {
 	/*
 	 * Get pointers to manifest and spine nodes, we'll be hopping between them.
 	 */
-
 	while (cur != NULL) {
 
 		if (_strcmpnul(cur->name, "manifest") == 0) {

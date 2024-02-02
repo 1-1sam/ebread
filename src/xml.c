@@ -9,6 +9,7 @@ struct xml_tree_node {
 	struct xml_tree_node* prev;
 	struct xml_tree_node* parent;
 	struct xml_tree_node* child;
+	struct xml_tree_node* preorder;
 	char* attributes;
 	char* text;
 	char* content_ptr;
@@ -21,6 +22,7 @@ static struct xml_tree_node null_node = {
 	.prev = NULL,
 	.parent = NULL,
 	.child = NULL,
+	.preorder = NULL,
 	.attributes = NULL,
 	.text = NULL,
 	.content_ptr = NULL,
@@ -140,6 +142,35 @@ _free_node(struct xml_tree_node* node) {
 
 }
 
+static struct xml_tree_node*
+_get_preorder(struct xml_tree_node* node) {
+
+	if (node->child != NULL) {
+		node->preorder = node->child;
+		_get_preorder(node->preorder);
+	}
+
+	if (node->next != NULL) {
+		node->preorder = node->next;
+		node = node->preorder;
+		node = _get_preorder(node);
+	}
+
+	return node;
+
+}
+
+static void
+_build_preorder(struct xml_tree_node* head) {
+
+	struct xml_tree_node* cur = head;
+
+	cur = _get_preorder(cur);
+
+	cur->preorder = NULL;
+
+}
+
 struct xml_tree_node*
 build_xml_tree(char* xml) {
 
@@ -205,6 +236,8 @@ build_xml_tree(char* xml) {
 
 	} while ((curtok = strtok(NULL, "<")) != NULL);
 
+	_build_preorder(head);
+
 	return head;
 
 }
@@ -212,8 +245,18 @@ build_xml_tree(char* xml) {
 void
 free_tree(struct xml_tree_node* head) {
 
+	struct xml_tree_node *cur, *next;
+
 	free(head->content_ptr);
 
-	_free_node(head);
+	cur = head;
+
+	while (cur != NULL) {
+		next = cur->preorder;
+		free(cur);
+		cur = next;
+	}
+
+	//_free_node(head);
 
 }
