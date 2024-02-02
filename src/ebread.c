@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <limits.h>
@@ -401,7 +403,7 @@ ebread_run(struct ebread init) {
 			_get_output_file(init, cur_out, out_dir, spine.hrefs[i]);
 		}
 
-		html_write_to_file(spine.hrefs[i], cur_out);
+		html_write_to_file(cur_file, cur_out);
 
 	}
 
