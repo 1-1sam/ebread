@@ -394,6 +394,10 @@ ebread_run(struct ebread init) {
 			_get_output_file(init, cur_out, out_dir, spine.hrefs[i]);
 		}
 
+		if (init.verbose) {
+			printf("Parsing %s, writing output to %s\n", cur_file, cur_out);
+		}
+
 		epub_html2text(cur_file, cur_out, init.linelen, init.indent);
 
 	}
@@ -402,10 +406,6 @@ ebread_run(struct ebread init) {
 		free(spine.hrefs[i]);
 	}
 	free(spine.hrefs);
-
-	if (init.verbose) {
-		printf("Deleting temporary extract directory: %s\n", uz_dir);
-	}
 
 /*
  * TODO:
