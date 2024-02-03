@@ -15,6 +15,27 @@ struct html_content {
 	struct html_rules* rules;
 };
 
+static char* text_nodes[] = {
+	"p",
+	"h1",
+	"h2",
+	"h3",
+	"h4",
+	"h5",
+	"h6",
+	"div",
+	"span",
+	"title",
+	NULL,
+};
+
+static char*
+_get_text_type(struct xml_tree_node* node) {
+
+	return NULL;
+
+}
+
 static void
 _add_indent(char* line, int indent) {
 
@@ -34,7 +55,10 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 
 	outputf = fopen(output, "a");
 
-	curline = calloc(linelen + 2, sizeof(char));
+	if ((curline = calloc(linelen + 2, sizeof(char))) == NULL) {
+		fprintf(stderr, "Could not allocate memory\n");
+		return -1;
+	}
 
 	_add_indent(curline, indent);
 
@@ -45,6 +69,7 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 	do {
 
 		char* p = cur->text;
+		size_t wordlen = 0;
 
 		if (p == NULL) {
 			continue;
@@ -52,7 +77,7 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 
 		while (*(p += strspn(p, " ")) != '\0') {
 
-			size_t wordlen = strcspn(p, " ");
+			wordlen = strcspn(p, " ");
 
 			if (wordlen + strlen(curline) > linelen) {
 
