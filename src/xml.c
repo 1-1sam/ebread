@@ -185,8 +185,11 @@ build_xml_tree(char* xml) {
 	do {
 
 		tag = curtok;
-		text = strchr(tag, '>') + 1;
-		*(text - 1) = '\0';
+		if ((text = strchr(tag, '>')) == NULL) {
+			continue;
+		}
+		*text = '\0';
+		text++;
 
 		while (*text == ' ') {
 			text++;
