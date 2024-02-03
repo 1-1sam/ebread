@@ -55,6 +55,7 @@ _read_xml_file(char* xml) {
 	fread(read, sizeof(char), size, xmlf);
 	read[size] = '\0';
 
+	/* Replace tabs, newlines, etc. with spaces */
 	for (char* p = read; *p != '\0'; p++) {
 		if (isspace(*p)) {
 			*p = ' ';
@@ -111,17 +112,23 @@ _make_child_node(struct xml_tree_node* parent) {
 
 	struct xml_tree_node* rtrn = parent;
 
+	/* Create initial child node if it does not exist */
 	if (rtrn->child == NULL) {
-		rtrn->child = malloc(sizeof(struct xml_tree_node));
+		if ((rtrn->child = malloc(sizeof(struct xml_tree_node))) == NULL) {
+			return NULL;
+		}
 		*(rtrn->child) = null_node;
 		rtrn->child->parent = rtrn;
 		rtrn = rtrn->child;
+	/* Add new child node at the end of child node line */
 	} else {
 		rtrn = rtrn->child;
 		while (rtrn->next != NULL) {
 			rtrn = rtrn->next;
 		}
-		rtrn->next = malloc(sizeof(struct xml_tree_node));
+		if ((rtrn->next = malloc(sizeof(struct xml_tree_node))) == NULL) {
+			return NULL;
+		}
 		*(rtrn->next) = null_node;
 		rtrn->next->prev = rtrn;
 		rtrn->next->parent = rtrn->parent;
@@ -157,6 +164,23 @@ _build_traverse_line(struct xml_tree_node* head) {
 			trav = trav->traverse;
 			cur = cur->next;
 		}
+	}
+
+}
+
+void
+xml_free_tree(struct xml_tree_node* head) {
+
+	struct xml_tree_node *cur, *next;
+
+	free(head->content_ptr);
+
+	cur = head;
+
+	while (cur != NULL) {
+		next = cur->traverse;
+		free(cur);
+		cur = next;
 	}
 
 }
@@ -212,17 +236,29 @@ xml_build_tree(char* xml) {
 			cur = cur->parent;
 		/* Single tag node */
 		} else if (*(strchr(tag, '\0') - 1) == '/') {
-			cur = _make_child_node(cur);
+			if ((cur = _make_child_node(cur)) == NULL) {
+				_build_traverse_line(head);
+				xml_free_tree(head);
+				return NULL;
+			}
 			_parse_tag(tag, cur);
 			cur = cur->parent;
 		/* New child node */
 		} else {
-			cur = _make_child_node(cur);
+			if ((cur = _make_child_node(cur)) == NULL) {
+				_build_traverse_line(head);
+				xml_free_tree(head);
+				return NULL;
+			}
 			_parse_tag(tag, cur);
 		}
 
 		if (text != NULL) {
-			cur = _make_child_node(cur);
+			if ((cur = _make_child_node(cur)) == NULL) {
+				_build_traverse_line(head);
+				xml_free_tree(head);
+				return NULL;
+			}
 			cur->text = text;
 			cur = cur->parent;
 		}
@@ -244,22 +280,5 @@ xml_strcmpnul(char* s1, char* s2) {
 	}
 
 	return strcmp(s1, s2);
-
-}
-
-void
-xml_free_tree(struct xml_tree_node* head) {
-
-	struct xml_tree_node *cur, *next;
-
-	free(head->content_ptr);
-
-	cur = head;
-
-	while (cur != NULL) {
-		next = cur->traverse;
-		free(cur);
-		cur = next;
-	}
 
 }
