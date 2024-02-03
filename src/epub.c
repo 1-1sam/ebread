@@ -66,7 +66,10 @@ epub_get_rootfile(char* rootfile, char* rootdir) {
 
 	sprintf(container, "%s/%s", rootdir, container_path);
 
-	head = xml_build_tree(container);
+	if ((head = xml_build_tree(container)) == NULL) {
+		fprintf(stderr, "Could not parse container file\n");
+		return -1;
+	}
 
 	cur = head;
 
@@ -112,7 +115,11 @@ epub_get_spine(char* rootfile) {
 
 	spine.hrefnum = 0;
 
-	head = xml_build_tree(rootfile);
+	if ((head = xml_build_tree(rootfile)) == NULL) {
+		fprintf(stderr, "Could not parse rootfile\n");
+		spine.hrefs = NULL;
+		return spine;
+	}
 
 	/* Points to package's child node */
 	cur = head->child->child;
@@ -158,9 +165,7 @@ epub_get_spine(char* rootfile) {
 		cur = cur->next;
 	}
 
-	spine.hrefs = malloc(sizeof(char*) * spine.hrefnum);
-
-	if (spine.hrefs == NULL) {
+	if ((spine.hrefs = malloc(sizeof(char*) * spine.hrefnum)) == NULL) {
 		fprintf(stderr, "Could not allocate memory\n");
 		xml_free_tree(head);
 		return spine;
