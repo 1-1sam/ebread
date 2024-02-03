@@ -1,13 +1,15 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <ctype.h>
-
-struct spine {
-	char** hrefs;
-	int hrefnum;
+struct xml_tree_node {
+	char* name;
+	struct xml_tree_node* next;
+	struct xml_tree_node* prev;
+	struct xml_tree_node* parent;
+	struct xml_tree_node* child;
+	struct xml_tree_node* traverse;
+	char* attributes;
+	char* text;
+	char* content_ptr;
 };
 
-int          xml_get_rootfile(char* rootfile, char* rootdir);
-struct spine xml_get_spine(char* rootfile);
+struct xml_tree_node* build_xml_tree(char* xml);
+
+void free_tree(struct xml_tree_node* head);

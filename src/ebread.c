@@ -1,14 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <limits.h>
 
+#include "epub-html.h"
+#include "epub-xml.h"
 #include "unzip.h"
-#include "xml.h"
-#include "html.h"
 
 #ifndef EBREAD_VERSION
-  #define EBREAD_VERSION "0.1"
+#  define EBREAD_VERSION "0.1"
 #endif
 
 #define PATHMAX 4096
@@ -306,7 +308,7 @@ ebread_run(struct ebread init) {
 
 	char uz_dir[PATHMAX + 1];
 	char out_dir[PATHMAX + 1];
-	char rootfile[ZIP_PATH_MAX + 1];
+	char rootfile[ZIP_PATH_MAX + 1] = { 0 };
 	struct spine spine;
 	char content_dir[ZIP_PATH_MAX + 1];
 	char cur_file[PATHMAX + 1];
@@ -319,10 +321,6 @@ ebread_run(struct ebread init) {
 
 	if (_get_unzip_dir(uz_dir, init) == -1) {
 		return 1;
-	}
-
-	if (init.verbose) {
-		printf("Unzipping %s\n", init.epub);
 	}
 
 	if (uz_unzip_epub(init.epub, uz_dir) == -1) {
@@ -362,10 +360,6 @@ ebread_run(struct ebread init) {
 		}
 	}
 
-	if (init.verbose) {
-		printf("Parsing XML\n");
-	}
-
 	if (xml_get_rootfile(rootfile, uz_dir) == -1) {
 		fprintf(stderr, "Could not find rootfile in %s\n", init.epub);
 		return 1;
@@ -393,8 +387,6 @@ ebread_run(struct ebread init) {
 
 	for (int i = 0; i < spine.hrefnum; i++) {
 
-		struct parsed_html parsed;
-
 		memset(cur_file, 0, ZIP_PATH_MAX);
 		sprintf(cur_file, "%s/%s", content_dir, spine.hrefs[i]);
 
@@ -403,31 +395,7 @@ ebread_run(struct ebread init) {
 			_get_output_file(init, cur_out, out_dir, spine.hrefs[i]);
 		}
 
-		if (init.verbose) {
-			printf("Parsing %s\n", cur_file);
-		}
-
-		parsed = html_parse(cur_file);
-
-		if (parsed.content_num == -1) {
-			fprintf(stderr, "Error parsing %s\n", init.epub);
-			return 1;
-		}
-
-		if (init.verbose) {
-			printf("Writing to %s\n", cur_out);
-		}
-
-		html_write_to_text(cur_out, parsed, init.linelen, init.indent);
-
-		if (parsed.content_num == 0) {
-			continue;
-		}
-
-		for (int i = 0; i < parsed.content_num; i++) {
-			free(parsed.content[i].text);
-		}
-		free(parsed.content);
+		html_write_to_file(cur_file, cur_out, init.linelen, init.indent);
 
 	}
 
