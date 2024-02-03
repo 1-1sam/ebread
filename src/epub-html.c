@@ -29,8 +29,34 @@ static char* text_nodes[] = {
 	NULL,
 };
 
-static char*
-_get_text_type(struct xml_tree_node* node) {
+/* TODO: Make this a public function in xml.c */
+static int
+_strcmpnul(char* s1, char* s2) {
+
+	if (s1 == NULL || s2 == NULL) {
+		return 1;
+	}
+
+	return strcmp(s1, s2);
+
+}
+
+static struct xml_tree_node*
+_get_text_parent(struct xml_tree_node* node) {
+
+	struct xml_tree_node* cur = node;
+
+	if (node->name == NULL) {
+		return NULL;
+	}
+
+	do {
+		for (char** p = text_nodes; *p != NULL; p++) {
+			if (_strcmpnul(cur->name, *p) == 0) {
+				return cur;
+			}
+		}
+	} while ((cur = cur->parent) != NULL);
 
 	return NULL;
 
@@ -51,6 +77,7 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 	FILE* outputf;
 	struct xml_tree_node* tree;
 	struct xml_tree_node* cur;
+	struct xml_tree_node *cur_txtp, *prev_txtp;
 	char* curline;
 
 	outputf = fopen(output, "a");
@@ -66,25 +93,43 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 
 	cur = tree;
 
+	prev_txtp = NULL;
+
 	do {
 
-		char* p = cur->text;
+		char* p;
 		size_t wordlen = 0;
 
-		if (p == NULL) {
+		if (_strcmpnul(cur->name, "br") == 0) {
+			fprintf(outputf, "%s\n", curline);
+			memset(curline, 0, linelen + 2);
+			_add_indent(curline, indent);
 			continue;
+		}
+
+		if ((p = cur->text) == NULL) {
+			continue;
+		}
+
+		if ((cur_txtp = _get_text_parent(cur)) != prev_txtp) {
+			fprintf(outputf, "%s\n\n", curline);
+			memset(curline, 0, linelen + 2);
+			_add_indent(curline, indent);
+			prev_txtp = cur_txtp;
 		}
 
 		while (*(p += strspn(p, " ")) != '\0') {
 
 			wordlen = strcspn(p, " ");
 
+			/* Drop to next line */
 			if (wordlen + strlen(curline) > linelen) {
 
 				fprintf(outputf, "%s\n", curline);
 				memset(curline, 0, linelen + 2);
 				_add_indent(curline, indent);
 
+				/* Hyphenate words longer than linelen - indent */
 				while (wordlen > linelen - indent) {
 
 					strncat(curline, p, linelen - indent - 1);
@@ -108,8 +153,6 @@ html_write_to_file(char* html, char* output, int linelen, int indent) {
 			p += strcspn(p, " ");
 
 		}
-
-		fprintf(outputf, "\n\n");
 
 	} while ((cur = cur->traverse) != NULL);
 
