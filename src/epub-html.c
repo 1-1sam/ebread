@@ -23,6 +23,8 @@ static char* text_nodes[] = {
 	"h4",
 	"h5",
 	"h6",
+	"td",
+	"li",
 	"div",
 	"span",
 	"title",
@@ -45,10 +47,6 @@ static struct xml_tree_node*
 _get_text_parent(struct xml_tree_node* node) {
 
 	struct xml_tree_node* cur = node;
-
-	if (node->name == NULL) {
-		return NULL;
-	}
 
 	do {
 		for (char** p = text_nodes; *p != NULL; p++) {
