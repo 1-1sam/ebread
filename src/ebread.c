@@ -323,10 +323,6 @@ ebread_run(struct ebread init) {
 		return 1;
 	}
 
-	if (init.verbose) {
-		printf("Unzipping %s\n", init.epub);
-	}
-
 	if (uz_unzip_epub(init.epub, uz_dir) == -1) {
 		fprintf(stderr, "Error extracting %s\n", init.epub);
 		return 1;
@@ -362,10 +358,6 @@ ebread_run(struct ebread init) {
 			fprintf(stderr, "Could not create output directory: %s\n", out_dir);
 			return 1;
 		}
-	}
-
-	if (init.verbose) {
-		printf("Parsing XML\n");
 	}
 
 	if (xml_get_rootfile(rootfile, uz_dir) == -1) {

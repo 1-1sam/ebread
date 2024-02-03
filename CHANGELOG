@@ -9,3 +9,4 @@ Changed:
 
 Removed:
  - libxml2 dependency.
+ - Useless verbose messages.
