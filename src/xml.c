@@ -87,6 +87,11 @@ _parse_tag(char* tag, struct xml_tree_node* node) {
 	char* name;
 	char* attributes;
 
+	/* Get rid of trailing slash (for single-tag nodes) */
+	if (*(strchr(tag, '\0') - 1) == '/') {
+		*(strrchr(tag, '/')) = '\0';
+	}
+
 	name = tag + strspn(tag, " ");
 
 	attributes = name + strcspn(tag, " ");
