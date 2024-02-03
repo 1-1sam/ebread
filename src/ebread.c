@@ -5,8 +5,7 @@
 #include <getopt.h>
 #include <limits.h>
 
-#include "epub-html.h"
-#include "epub-xml.h"
+#include "epub.h"
 #include "unzip.h"
 
 #ifndef EBREAD_VERSION
@@ -360,12 +359,12 @@ ebread_run(struct ebread init) {
 		}
 	}
 
-	if (xml_get_rootfile(rootfile, uz_dir) == -1) {
+	if (epub_get_rootfile(rootfile, uz_dir) == -1) {
 		fprintf(stderr, "Could not find rootfile in %s\n", init.epub);
 		return 1;
 	}
 
-	spine = xml_get_spine(rootfile);
+	spine = epub_get_spine(rootfile);
 
 	if (spine.hrefs == NULL) {
 		fprintf(stderr, "Could not parse rootfile in %s\n", init.epub);
@@ -395,7 +394,7 @@ ebread_run(struct ebread init) {
 			_get_output_file(init, cur_out, out_dir, spine.hrefs[i]);
 		}
 
-		html_write_to_file(cur_file, cur_out, init.linelen, init.indent);
+		epub_html2text(cur_file, cur_out, init.linelen, init.indent);
 
 	}
 

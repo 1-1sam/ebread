@@ -162,7 +162,7 @@ _build_traverse_line(struct xml_tree_node* head) {
 }
 
 struct xml_tree_node*
-build_xml_tree(char* xml) {
+xml_build_tree(char* xml) {
 
 	struct xml_tree_node* head;
 	char* xml_content;
@@ -235,8 +235,20 @@ build_xml_tree(char* xml) {
 
 }
 
+/* Compare two strings. If one is NULL, return 1 */
+int
+xml_strcmpnul(char* s1, char* s2) {
+
+	if (s1 == NULL || s2 == NULL) {
+		return 1;
+	}
+
+	return strcmp(s1, s2);
+
+}
+
 void
-free_tree(struct xml_tree_node* head) {
+xml_free_tree(struct xml_tree_node* head) {
 
 	struct xml_tree_node *cur, *next;
 

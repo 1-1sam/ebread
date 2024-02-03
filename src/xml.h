@@ -10,6 +10,8 @@ struct xml_tree_node {
 	char* content_ptr;
 };
 
-struct xml_tree_node* build_xml_tree(char* xml);
+int xml_strcmpnul(char* s1, char* s2);
 
-void free_tree(struct xml_tree_node* head);
+struct xml_tree_node* xml_build_tree(char* xml);
+
+void xml_free_tree(struct xml_tree_node* head);
