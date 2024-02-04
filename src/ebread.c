@@ -32,7 +32,7 @@ typedef int flag_t;
 static void
 _print_usage(void) {
 
-	printf("Usage: ebread [-oxVhuv] [-1 file] [-d dir] [-n name] [-i num] [-l num] EPUB\n");
+	printf("Usage: ebread [-oxVqhuv] [-1 file] [-d dir] [-n name] [-i num] [-l num] EPUB\n");
 
 }
 
@@ -56,7 +56,8 @@ _print_help(void) {
 	printf(" -l <num>   --line-length=<num>         Set output line length (default is 80).\n");
 	printf(" -o         --stdout                    Write parsed text to stdout.\n");
 	printf(" -x         --extract                   Extract epub contents, do no parsing.\n");
-	printf(" -V         --verbose                   Enable verbose output.\n");
+	printf(" -V         --verbose                   Enable verbose output (default).\n");
+	printf(" -q         --quiet                     Disable verbose output.\n");
 	printf(" -h         --help                      Print this help message.\n");
 	printf(" -u         --usage                     Print usage message.\n");
 	printf(" -v         --version                   Print program version.\n");
@@ -196,7 +197,7 @@ ebread_init(int argc, char** argv) {
 		.mode = PARSE,
 		.output_dir = NULL,
 		.output_name = NULL,
-		.verbose = 0,
+		.verbose = 1,
 		.linelen = 80,
 		.indent = 4,
 		.stdout = 0,
@@ -212,13 +213,14 @@ ebread_init(int argc, char** argv) {
 		{ "name", required_argument, 0, 'n' },
 		{ "extract", no_argument, 0, 'x' },
 		{ "verbose", no_argument, 0, 'V' },
+		{ "quiet", no_argument, 0, 'q' },
 		{ "help", no_argument, 0, 'h' },
 		{ "usage", no_argument, 0, 'u' },
 		{ "version", no_argument, 0, 'v' },
 		{ 0, 0, 0, 0 }
 	};
 
-	while ((c = getopt_long(argc, argv, "1:i:l:od:n:xVhuv", opts, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "1:i:l:od:n:xVqhuv", opts, NULL)) != -1) {
 		switch (c) {
 		case '1':
 			ebread.single_output_file = optarg;
@@ -247,6 +249,9 @@ ebread_init(int argc, char** argv) {
 			break;
 		case 'V':
 			ebread.verbose = 1;
+			break;
+		case 'q':
+			ebread.verbose = 0;
 			break;
 		case 'h':
 			_print_help();
@@ -296,6 +301,11 @@ ebread_init(int argc, char** argv) {
 
 	if (ebread.indent >= ebread.linelen - 2) {
 		ebread.indent = 0;
+	}
+
+	/* Disable verbose output if writing plaintext to stdout. */
+	if (ebread.verbose && ebread.stdout) {
+		ebread.verbose = 0;
 	}
 
 	return ebread;

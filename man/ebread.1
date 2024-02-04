@@ -1,4 +1,4 @@
-.Dd $Mdocdate: January 17 2024 $
+.Dd $Mdocdate: Febuary 4 2024 $
 .Dt EBREAD 1
 .Os
 .Sh NAME
@@ -6,7 +6,7 @@
 .Nd EPUB-to-plaintext converter
 .Sh SYNOPSIS
 .Nm ebread
-.Op Fl oxVhuv
+.Op Fl oxVqhuv
 .Op Fl 1 Ar file
 .Op Fl d Ar dir
 .Op Fl n Ar name
@@ -58,7 +58,9 @@ and do no parsing.
 .Fl d
 can be used to set the extract directory.
 .It Fl V, Fl \-verbose
-Enable verbose output.
+Enable verbose output. On by default. Does not work with -o option.
+.It Fl q, Fl \-quiet
+Disable verbose output.
 .It Fl h, Fl \-help
 Print help message.
 .It Fl u, Fl \-usage
