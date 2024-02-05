@@ -49,7 +49,7 @@ _print_help(void) {
 	_print_version();
 	_print_usage();
 	printf("Options:\n");
-	printf(" -1 <file>  --single-file=<file>        Write all output to file.\n");
+	printf(" -1 <file>  --output-file=<file>        Write all output to file.\n");
 	printf(" -d <dir>   --output-directory=<dir>    Place output files in dir.\n");
 	printf(" -n <name>  --name=<name>               Name output files.\n");
 	printf(" -i <num>   --indent=<num>              Set output indent size (default is 4).\n");
@@ -205,7 +205,7 @@ ebread_init(int argc, char** argv) {
 	};
 
 	struct option opts[] = {
-		{ "single-file", required_argument, 0, '1' },
+		{ "output-file", required_argument, 0, '1' },
 		{ "indent", required_argument, 0, 'i' },
 		{ "line-length", required_argument, 0, 'l' },
 		{ "stdout", no_argument, 0, 'o' },
