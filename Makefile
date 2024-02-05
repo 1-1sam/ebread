@@ -13,3 +13,5 @@ install: src/ebread
 
 clean:
 	make clean -C src
+
+.PHONY: build install clean

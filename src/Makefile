@@ -16,3 +16,5 @@ $(ebread_objects): %.o: %.c
 
 clean:
 	rm ebread $(ebread_objects)
+
+.PHONY: all clean
