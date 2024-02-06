@@ -190,7 +190,6 @@ struct ebread
 ebread_init(int argc, char** argv) {
 
 	int c;
-	/* TODO: Perhaps make ebread a global...? */
 	struct ebread ebread = {
 		.epub = NULL,
 		.run_state = RUN,
@@ -276,6 +275,7 @@ ebread_init(int argc, char** argv) {
 	} else {
 		_print_help();
 		ebread.run_state = ERROR;
+		return ebread;
 	}
 
 	/* 0 or ULONG_MAX means something went wrong with the strtoul conversion. */
