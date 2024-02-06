@@ -64,6 +64,51 @@ _print_help(void) {
 
 }
 
+/*
+ * Check to see if file name lengths would exceed PATHMAX. This means:
+ * 1. No possible errors from trying to create a file/dir that exceeds PATHMAX.
+ * 2. strcat, strcpy, sprintf, etc. can be used rather than strn* counterparts.
+ */
+static int
+_check_name_lengths(struct ebread init) {
+
+	char cwd[PATHMAX + 1];
+	int cwdlen;
+
+	getcwd(cwd, PATHMAX + 1);
+
+	cwdlen = strlen(cwd);
+
+	if (init.single_output_file != NULL) {
+		if (strlen(init.single_output_file) + cwdlen > PATHMAX) {
+			return -1;
+		}
+	} else {
+
+		int maxlen = 0;
+
+		maxlen += (init.output_dir != NULL)
+			? strlen(init.output_dir) : strlen(init.epub);
+
+		/*
+		 * Let's assume worse-case scenario for unzipped file name lengths and
+		 * number of digits in output_name
+		 */
+		maxlen += (init.output_name != NULL)
+			? strlen(init.output_name) + 9 : ZIP_PATH_MAX;
+
+		maxlen += cwdlen;
+
+		if (maxlen > PATHMAX) {
+			return -1;
+		}
+
+	}
+
+	return 0;
+
+}
+
 static int
 _get_unzip_dir(char* uz_dir, struct ebread ebread) {
 
@@ -307,7 +352,14 @@ ebread_init(int argc, char** argv) {
 		if (strchr(ebread.output_name, '/') != NULL) {
 			fprintf(stderr, "File names cannot contain '/'\n");
 			ebread.run_state = ERROR;
+			return ebread;
 		}
+	}
+
+	if (_check_name_lengths(ebread) == -1) {
+		fprintf(stderr, "Output file name would be too long\n");
+		ebread.run_state = ERROR;
+		return ebread;
 	}
 
 	return ebread;
