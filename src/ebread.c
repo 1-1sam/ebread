@@ -238,11 +238,7 @@ ebread_init(int argc, char** argv) {
 			ebread.output_dir = optarg;
 			break;
 		case 'n':
-			if (strchr(ebread.output_name = optarg, '/') != NULL) {
-				fprintf(stderr, "Filename contains '/': %s\n",
-					ebread.output_name);
-				ebread.run_state = ERROR;
-			}
+			ebread.output_name = optarg;
 			break;
 		case 'x':
 			ebread.mode = UNZIP;
@@ -286,7 +282,6 @@ ebread_init(int argc, char** argv) {
 	if (ebread.linelen == 0 || ebread.linelen == ULONG_MAX) {
 		ebread.linelen = 80;
 	}
-
 	if (ebread.indent == ULONG_MAX) {
 		ebread.indent = 0;
 	}
@@ -306,6 +301,13 @@ ebread_init(int argc, char** argv) {
 	/* Disable verbose output if writing plaintext to stdout. */
 	if (ebread.verbose && ebread.stdout) {
 		ebread.verbose = 0;
+	}
+
+	if (ebread.output_name != NULL) {
+		if (strchr(ebread.output_name, '/') != NULL) {
+			fprintf(stderr, "File names cannot contain '/'\n");
+			ebread.run_state = ERROR;
+		}
 	}
 
 	return ebread;
