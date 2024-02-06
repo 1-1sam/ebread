@@ -110,8 +110,8 @@ uz_unzip_epub(char* epub, char* output_dir) {
 
 	mz_zip_archive ep_archive;
 	int filenum;
-	char zip_filename[ZIP_PATH_MAX];
-	char unzipped_path[PATHMAX];
+	char zip_filename[ZIP_PATH_MAX + 1];
+	char unzipped_path[PATHMAX + 1];
 	char* last_slash;
 
 	if (!_is_epub(epub)) {
@@ -131,8 +131,8 @@ uz_unzip_epub(char* epub, char* output_dir) {
 
 		mz_zip_reader_get_filename(&ep_archive, i, zip_filename, ZIP_PATH_MAX);
 
-		strcat(unzipped_path, output_dir);
-		strcat(unzipped_path, zip_filename);
+		strncat(unzipped_path, output_dir, PATHMAX);
+		strncat(unzipped_path, zip_filename, PATHMAX - strlen(unzipped_path));
 
 		/* This should give us the full path of the file's parent directory */
 		last_slash = strrchr(unzipped_path, '/');
