@@ -105,7 +105,7 @@ _get_unzip_dir(char* uz_dir, struct ebread ebread) {
 
 	if (ebread.mode == PARSE) {
 
-		strcpy(uz_dir, "/tmp/ebread-XXXXXX");
+		strcpy(uz_dir, "/tmp/ebread.XXXXXX");
 
 		if (mkdtemp(uz_dir) == NULL) {
 			fprintf(stderr, "Could not create temporary extract directory\n");
