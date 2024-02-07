@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <sys/stat.h>
-#include <errno.h>
-
 #define ZIP_PATH_MAX 260
 
 void uz_rm_tree(char* path);

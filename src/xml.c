@@ -3,17 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct xml_tree_node {
-	char* name;
-	struct xml_tree_node* next;
-	struct xml_tree_node* prev;
-	struct xml_tree_node* parent;
-	struct xml_tree_node* child;
-	struct xml_tree_node* traverse;
-	char* attributes;
-	char* text;
-	char* content_ptr;
-};
+#include "xml.h"
 
 /* Used to initialize newly created nodes */
 static struct xml_tree_node null_node = {

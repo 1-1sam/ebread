@@ -9,15 +9,9 @@
 #include <fts.h>
 
 #include "miniz.h"
+#include "unzip.h"
 
-/* Path max on Linux */
 #define PATHMAX 4095
-
-/*
- * Default zip path max for Windows, I'd assume most epub creators would not
- * exceed this maximum.
- */
-#define ZIP_PATH_MAX 260
 
 /* Magic bits used by zip archives. */
 static char epub_magic[] = { 0x50, 0x4B, 0x03, 0x04 };

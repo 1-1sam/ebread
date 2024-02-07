@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <limits.h>
 
+#include "ebread.h"
 #include "epub.h"
 #include "unzip.h"
 
@@ -16,21 +17,6 @@
 
 /* Length of /tmp/ebread.XXXXXX/ */
 #define TMPDIRLEN 18
-
-typedef int flag_t;
-
- struct ebread {
-	char* epub;
-	enum { RUN, NORUN, ERROR } run_state;
-	enum { PARSE, UNZIP } mode;
-	char* output_dir;
-	char* output_name;
-	flag_t verbose;
-	unsigned long linelen;
-	unsigned long indent;
-	flag_t stdout;
-	char* single_output_file;
-};
 
 static void
 _print_usage(void) {

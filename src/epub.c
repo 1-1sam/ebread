@@ -2,14 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "epub.h"
 #include "xml.h"
 
 #define PATHMAX 4096
-
-struct spine {
-	char** hrefs;
-	int hrefnum;
-};
 
 /* The epub standard states that the root file's path must be here. */
 static char* container_path = "META-INF/container.xml";
