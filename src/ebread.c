@@ -14,6 +14,9 @@
 
 #define PATHMAX 4096
 
+/* Length of /tmp/ebread.XXXXXX/ */
+#define TMPDIRLEN 18
+
 typedef int flag_t;
 
  struct ebread {
@@ -371,7 +374,7 @@ ebread_run(struct ebread init) {
 
 	char uz_dir[PATHMAX + 1];
 	char out_dir[PATHMAX + 1];
-	char rootfile[ZIP_PATH_MAX + 1] = { 0 };
+	char rootfile[ZIP_PATH_MAX + TMPDIRLEN + 1] = { 0 };
 	struct spine spine;
 	char content_dir[ZIP_PATH_MAX + 1];
 	char cur_file[PATHMAX + 1];
