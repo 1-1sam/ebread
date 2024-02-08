@@ -68,8 +68,8 @@ _check_name_lengths(struct ebread init) {
 
 	cwdlen = strlen(cwd);
 
-	if (init.single_output_file != NULL) {
-		if (strlen(init.single_output_file) + cwdlen > PATHMAX) {
+	if (init.output_file != NULL) {
+		if (strlen(init.output_file) + cwdlen > PATHMAX) {
 			return -1;
 		}
 	} else {
@@ -234,7 +234,7 @@ ebread_init(int argc, char** argv) {
 		.linelen = 80,
 		.indent = 4,
 		.stdout = 0,
-		.single_output_file = NULL,
+		.output_file = NULL,
 	};
 
 	struct option opts[] = {
@@ -256,7 +256,7 @@ ebread_init(int argc, char** argv) {
 	while ((c = getopt_long(argc, argv, "1:i:l:od:n:xVqhuv", opts, NULL)) != -1) {
 		switch (c) {
 		case '1':
-			ebread.single_output_file = optarg;
+			ebread.output_file = optarg;
 			break;
 		case 'i':
 			ebread.indent = strtoul(optarg, NULL, 10);
@@ -387,24 +387,24 @@ ebread_run(struct ebread init) {
 
 	if (init.stdout) {
 		strcpy(cur_out, "/dev/stdout");
-	} else if (init.single_output_file != NULL) {
+	} else if (init.output_file != NULL) {
 
-		if (strchr(init.single_output_file, '/') != NULL) {
+		if (strchr(init.output_file, '/') != NULL) {
 
-			*(strrchr(init.single_output_file, '/')) = '\0';
+			*(strrchr(init.output_file, '/')) = '\0';
 
-			if (uz_make_path(init.single_output_file) == -1) {
+			if (uz_make_path(init.output_file) == -1) {
 				fprintf(stderr, "Could not create output directory: %s\n",
 					out_dir);
 				return 1;
 			}
 
-			*(strchr(init.single_output_file, '\0')) = '/';
+			*(strchr(init.output_file, '\0')) = '/';
 		}
 
-		strcpy(cur_out, init.single_output_file);
+		strcpy(cur_out, init.output_file);
 
-	} else if (init.single_output_file == NULL) {
+	} else if (init.output_file == NULL) {
 		_get_output_dir(out_dir, init);
 		if (uz_make_path(out_dir) == -1) {
 			fprintf(stderr, "Could not create output directory: %s\n", out_dir);
@@ -442,7 +442,7 @@ ebread_run(struct ebread init) {
 		memset(cur_file, 0, ZIP_PATH_MAX);
 		sprintf(cur_file, "%s/%s", content_dir, spine.hrefs[i]);
 
-		if (init.single_output_file == NULL && !init.stdout) {
+		if (init.output_file == NULL && !init.stdout) {
 			memset(cur_out, 0, PATHMAX);
 			_get_output_file(init, cur_out, out_dir, spine.hrefs[i]);
 		}

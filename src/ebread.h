@@ -10,7 +10,7 @@ struct ebread {
 	unsigned long linelen;
 	unsigned long indent;
 	int stdout;
-	char* single_output_file;
+	char* output_file;
 };
 
 struct ebread ebread_init(int argc, char** argv);
