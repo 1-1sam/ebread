@@ -83,13 +83,10 @@ epub_get_rootfile(char* rootfile, char* rootdir) {
 
 	cur = cur->child;
 
-	rf_fullpath = strstr(cur->attributes, "full-path");
-	if (rf_fullpath == NULL) {
+	if ((rf_fullpath = xml_get_prop(cur, "full-path")) == NULL) {
 		xml_free_tree(head);
 		return -1;
 	}
-	rf_fullpath = strchr(rf_fullpath, '"') + 1;
-	*(strchr(rf_fullpath, '"')) = '\0';
 
 	strcat(rootfile, rootdir);
 	strncat(rootfile, rf_fullpath, strcspn(rf_fullpath, "\""));
@@ -178,9 +175,7 @@ epub_get_spine(char* rootfile) {
 			cur = cur->next;
 		}
 
-		idref = strstr(cur->attributes, "idref");
-		idref = strchr(idref, '"') + 1;
-		*(strchr(idref, '"')) = '\0';
+		idref = xml_get_prop(cur, "idref");
 
 		curmanif = manifn->child;
 
@@ -191,21 +186,14 @@ epub_get_spine(char* rootfile) {
 				continue;
 			}
 
-			id = strstr(curmanif->attributes, "id=");
-			id = strchr(id, '"') + 1;
-			*(strchr(id, '"')) = '\0';
+			id = xml_get_prop(curmanif, "id");
 
 			if (strcmp(idref, id) != 0) {
-				*(strchr(id, '\0')) = '"';
 				curmanif = curmanif->next;
 				continue;
 			}
 
-			*(strchr(id, '\0')) = '"';
-
-			href = strstr(curmanif->attributes, "href");
-			href = strchr(href, '"') + 1;
-			*(strchr(href, '"')) = '\0';
+			href = xml_get_prop(curmanif, "href");
 
 			if ((spine.hrefs[i] = strdup(href)) == NULL) {
 				fprintf(stderr, "Could not allocate memory\n");
@@ -217,8 +205,6 @@ epub_get_spine(char* rootfile) {
 				spine.hrefs = NULL;
 				return spine;
 			}
-
-			*(strchr(href, '\0')) = '"';
 
 			curmanif = curmanif->next;
 

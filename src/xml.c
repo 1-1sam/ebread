@@ -13,7 +13,7 @@ static struct xml_tree_node null_node = {
 	.parent = NULL,
 	.child = NULL,
 	.traverse = NULL,
-	.attributes = NULL,
+	.props = NULL,
 	.text = NULL,
 	.content_ptr = NULL,
 };
@@ -72,6 +72,78 @@ _is_end_tag(char* tag, struct xml_tree_node* node) {
 
 }
 
+static struct xml_prop*
+_parse_props(char* propstr) {
+
+	struct xml_prop* props;
+	int propnum = 0;
+	int cur = 0;
+	char* p = propstr;
+
+	/* Get number of props and check for formatting errors */
+	/* Basically checking to see if each prop looks like 'name = "value"' */
+	while (*(p += strspn(p, " ")) != '\0') {
+
+		/* Find '=' sign */
+		p += strcspn(p, "= ");
+		p += strspn(p, " ");
+
+		if (*p != '=') {
+			return NULL;
+		}
+
+		/* Find quotation marks */
+		p++;
+		p += strspn(p, " ");
+
+		if (*p != '"') {
+			return NULL;
+		}
+
+		p++;
+
+		p += strcspn(p, "\"");
+
+		if (*p == '\0') {
+			return NULL;
+		}
+
+		p++;
+
+		propnum++;
+
+	}
+
+	if ((props = malloc(sizeof(struct xml_prop) * (propnum + 1))) == NULL) {
+		fprintf(stderr, "Could not allocate memory\n");
+		return NULL;
+	}
+
+	p = propstr;
+
+	/* Now begin splitting up the props */
+	while (*(p += strspn(p, " ")) != '\0') {
+
+		props[cur].name = p;
+		p = strchr(p, '=');
+		p = strchr(p, '"') + 1;
+		*(props[cur].name + strcspn(props[cur].name, " =")) = '\0';
+
+		props[cur].value = p;
+		p = strchr(p, '"') + 1;
+		*(p - 1) = '\0';
+
+		cur++;
+
+	}
+
+	props[propnum].name = NULL;
+	props[propnum].value = NULL;
+
+	return props;
+
+}
+
 static int
 _parse_tag(char* tag, struct xml_tree_node* node) {
 
@@ -91,7 +163,14 @@ _parse_tag(char* tag, struct xml_tree_node* node) {
 	*(name + strcspn(name, " ")) = '\0';
 
 	node->name = name;
-	node->attributes = (*attributes != '\0') ? attributes : NULL;
+
+	if (*attributes == '\0') {
+		node->props = NULL;
+	} else {
+		if ((node->props = _parse_props(attributes)) == NULL) {
+			return -1;
+		}
+	}
 
 	return 0;
 
@@ -169,6 +248,9 @@ xml_free_tree(struct xml_tree_node* head) {
 
 	while (cur != NULL) {
 		next = cur->traverse;
+		if (cur->props != NULL) {
+			free(cur->props);
+		}
 		free(cur);
 		cur = next;
 	}
@@ -231,7 +313,11 @@ xml_build_tree(char* xml) {
 				xml_free_tree(head);
 				return NULL;
 			}
-			_parse_tag(tag, cur);
+			if (_parse_tag(tag, cur) == -1) {
+				_build_traverse_line(head);
+				xml_free_tree(head);
+				return NULL;
+			}
 			cur = cur->parent;
 		/* New child node */
 		} else {
@@ -240,7 +326,11 @@ xml_build_tree(char* xml) {
 				xml_free_tree(head);
 				return NULL;
 			}
-			_parse_tag(tag, cur);
+			if (_parse_tag(tag, cur) == -1) {
+				_build_traverse_line(head);
+				xml_free_tree(head);
+				return NULL;
+			}
 		}
 
 		if (text != NULL) {
@@ -258,6 +348,19 @@ xml_build_tree(char* xml) {
 	_build_traverse_line(head);
 
 	return head;
+
+}
+
+char*
+xml_get_prop(struct xml_tree_node* node, char* propname) {
+
+	for (struct xml_prop* p = node->props; p->name != NULL; p++) {
+		if (strcmp(p->name, propname) == 0) {
+			return p->value;
+		}
+	}
+
+	return NULL;
 
 }
 
