@@ -8,10 +8,12 @@ build:
 install: src/ebread
 	install -v -d $(DESTDIR)$(PREFIX)$(BINDIR)
 	install -v -m 755 src/ebread $(DESTDIR)$(PREFIX)$(BINDIR)
+
+install-man: man/ebread.1
 	install -v -d $(DESTDIR)$(PREFIX)$(MANDIR)/man1
 	install -v -m 644 man/ebread.1 $(DESTDIR)$(PREFIX)$(MANDIR)/man1
 
 clean:
 	$(MAKE) clean -C src
 
-.PHONY: build install clean
+.PHONY: build install install-man clean
