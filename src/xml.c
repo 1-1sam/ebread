@@ -137,6 +137,7 @@ _parse_props(char* propstr) {
 
 	}
 
+	/* Terminating array member */
 	props[propnum].name = NULL;
 	props[propnum].value = NULL;
 
