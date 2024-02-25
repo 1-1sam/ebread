@@ -463,7 +463,7 @@ ebread_run(struct ebread init) {
 /*
  * TODO:
  * Sometimes uz_rm_tree never gets to delete the uz_dir when using the -o,
- * option and piping sometimes, this is because ebread recieves a SIGPIPE. Is
+ * option while piping, this is because ebread recieves a SIGPIPE. Is
  * there a way around this?
  */
 	uz_rm_tree(uz_dir);
