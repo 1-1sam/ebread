@@ -121,7 +121,7 @@ uz_unzip_epub(char* epub, char* output_dir) {
 
 	for (int i = 0; i < filenum; i++) {
 
-		memset(unzipped_path, 0, PATHMAX);
+		memset(unzipped_path, 0, PATHMAX + 1);
 
 		mz_zip_reader_get_filename(&ep_archive, i, zip_filename, ZIP_PATH_MAX);
 
