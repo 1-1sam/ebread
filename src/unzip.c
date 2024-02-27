@@ -24,11 +24,11 @@ _is_epub(char* filename) {
 
 	file = fopen(filename, "r");
 
-	fread(magic, sizeof(char), 4, file);
+	fread(magic, sizeof(char), sizeof(magic), file);
 
 	fclose(file);
 
-	if (memcmp(magic, epub_magic, 4) == 0) {
+	if (memcmp(magic, epub_magic, sizeof(magic)) == 0) {
 		return 1;
 	}
 
