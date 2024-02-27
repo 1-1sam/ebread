@@ -1,5 +1,5 @@
 /*
- * The spine is a structure in a epub root file that lists the xhtml content
+ * The spine is a structure in an epub root file that lists the xhtml content
  * files of the epub using IDs. Each ID has a respective content file listed in
  * the root file's manifest. We will use the spine to determine which files to
  * parse.
@@ -16,6 +16,7 @@ struct spine {
 int epub_get_rootfile(char* rootfile, char* rootdir);
 
 /* Get spine in rootfile, which we will use to find what xhtml files to parse */
+/* NOTE: spine.hrefs is malloc'd, and should be freed when no longer in use. */
 struct spine epub_get_spine(char* rootfile);
 
 /*
