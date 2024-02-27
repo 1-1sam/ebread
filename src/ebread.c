@@ -439,11 +439,11 @@ ebread_run(struct ebread init) {
 
 	for (int i = 0; i < spine.hrefnum; i++) {
 
-		memset(cur_file, 0, ZIP_PATH_MAX);
+		memset(cur_file, 0, sizeof(cur_file));
 		sprintf(cur_file, "%s/%s", content_dir, spine.hrefs[i]);
 
 		if (init.output_file == NULL && !init.stdout) {
-			memset(cur_out, 0, PATHMAX);
+			memset(cur_out, 0, sizeof(cur_out));
 			_get_output_file(init, cur_out, out_dir, spine.hrefs[i]);
 		}
 
