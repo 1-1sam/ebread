@@ -46,9 +46,13 @@ _get_text_parent(struct xml_tree_node* node) {
 static void
 _add_indent(char* line, int indent) {
 
+	char* p = line;
+
 	for (int i = 0; i < indent; i++) {
-		strcat(line, " ");
+		*(p++) = ' ';
 	}
+
+	*p = '\0';
 
 }
 
