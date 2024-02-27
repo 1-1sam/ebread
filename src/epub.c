@@ -162,6 +162,12 @@ epub_get_spine(char* rootfile) {
 		cur = cur->next;
 	}
 
+	if (spine.hrefnum == 0) {
+		fprintf(stderr, "Found no items in root file's spine\n");
+		xml_free_tree(head);
+		return spine;
+	}
+
 	if ((spine.hrefs = malloc(sizeof(char*) * spine.hrefnum)) == NULL) {
 		fprintf(stderr, "Could not allocate memory\n");
 		xml_free_tree(head);
