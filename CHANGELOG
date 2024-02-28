@@ -1,4 +1,4 @@
-1/15/2024 - 2/19/2024
+1/15/2024 - 2/28/2024
 Added:
  - td (table data cells) are parsed.
  - li (list items) are parsed.
@@ -13,6 +13,7 @@ Changed:
 Removed:
  - libxml2 dependency.
  - Useless verbose messages.
+ - -V/--verbose option (it's enabled by default)
 
 Fixes:
  - Tag props are correctly parsed.
