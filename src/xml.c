@@ -310,35 +310,25 @@ xml_build_tree(char* xml) {
 		/* Single tag node */
 		} else if (*(strchr(tag, '\0') - 1) == '/') {
 			if ((cur = _make_child_node(cur)) == NULL) {
-				_build_traverse_line(head);
-				xml_free_tree(head);
-				return NULL;
+				goto die;
 			}
 			if (_parse_tag(tag, cur) == -1) {
-				_build_traverse_line(head);
-				xml_free_tree(head);
-				return NULL;
+				goto die;
 			}
 			cur = cur->parent;
 		/* New child node */
 		} else {
 			if ((cur = _make_child_node(cur)) == NULL) {
-				_build_traverse_line(head);
-				xml_free_tree(head);
-				return NULL;
+				goto die;
 			}
 			if (_parse_tag(tag, cur) == -1) {
-				_build_traverse_line(head);
-				xml_free_tree(head);
-				return NULL;
+				goto die;
 			}
 		}
 
 		if (text != NULL) {
 			if ((cur = _make_child_node(cur)) == NULL) {
-				_build_traverse_line(head);
-				xml_free_tree(head);
-				return NULL;
+				goto die;
 			}
 			cur->text = text;
 			cur = cur->parent;
@@ -349,6 +339,11 @@ xml_build_tree(char* xml) {
 	_build_traverse_line(head);
 
 	return head;
+
+die:
+	_build_traverse_line(head);
+	xml_free_tree(head);
+	return NULL;
 
 }
 
