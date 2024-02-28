@@ -21,7 +21,7 @@
 static void
 _print_usage(void) {
 
-	printf("Usage: ebread [-oxVqhuv] [-1 file] [-d dir] [-n name] [-i num] [-l num] EPUB\n");
+	printf("Usage: ebread [-oxqhuv] [-1 file] [-d dir] [-n name] [-i num] [-l num] EPUB\n");
 
 }
 
@@ -45,7 +45,6 @@ _print_help(void) {
 	printf(" -l <num>   --line-length=<num>         Set output line length (default is 80).\n");
 	printf(" -o         --stdout                    Write parsed text to stdout.\n");
 	printf(" -x         --extract                   Extract epub contents, do no parsing.\n");
-	printf(" -V         --verbose                   Enable verbose output (default).\n");
 	printf(" -q         --quiet                     Disable verbose output.\n");
 	printf(" -h         --help                      Print this help message.\n");
 	printf(" -u         --usage                     Print usage message.\n");
@@ -245,7 +244,6 @@ ebread_init(int argc, char** argv) {
 		{ "output-directory", required_argument, 0, 'd' },
 		{ "name", required_argument, 0, 'n' },
 		{ "extract", no_argument, 0, 'x' },
-		{ "verbose", no_argument, 0, 'V' },
 		{ "quiet", no_argument, 0, 'q' },
 		{ "help", no_argument, 0, 'h' },
 		{ "usage", no_argument, 0, 'u' },
@@ -253,7 +251,7 @@ ebread_init(int argc, char** argv) {
 		{ 0, 0, 0, 0 }
 	};
 
-	while ((c = getopt_long(argc, argv, "1:i:l:od:n:xVqhuv", opts, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "1:i:l:od:n:xqhuv", opts, NULL)) != -1) {
 		switch (c) {
 		case '1':
 			ebread.output_file = optarg;
@@ -275,9 +273,6 @@ ebread_init(int argc, char** argv) {
 			break;
 		case 'x':
 			ebread.mode = UNZIP;
-			break;
-		case 'V':
-			ebread.verbose = 1;
 			break;
 		case 'q':
 			ebread.verbose = 0;
