@@ -16,8 +16,11 @@ struct spine {
 int epub_get_rootfile(char* rootfile, char* rootdir);
 
 /* Get spine in rootfile, which we will use to find what xhtml files to parse */
-/* NOTE: spine.hrefs is malloc'd, and should be freed when no longer in use. */
+/* NOTE: Spine should be freed using epub_free_spine when no longer in use. */
 struct spine epub_get_spine(char* rootfile);
+
+/* Free spine created by epub_get_spine */
+void epub_free_spine(struct spine spine);
 
 /*
  * Parse html, write to output. linelen specifies maximum output line length

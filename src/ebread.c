@@ -450,10 +450,7 @@ ebread_run(struct ebread init) {
 
 	}
 
-	for (int i = 0; i < spine.hrefnum; i++) {
-		free(spine.hrefs[i]);
-	}
-	free(spine.hrefs);
+	epub_free_spine(spine);
 
 /*
  * TODO:

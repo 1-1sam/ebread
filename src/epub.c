@@ -230,6 +230,16 @@ epub_get_spine(char* rootfile) {
 
 }
 
+void
+epub_free_spine(struct spine spine) {
+
+	for (int i = 0; i < spine.hrefnum; i++) {
+		free(spine.hrefs[i]);
+	}
+	free(spine.hrefs);
+
+}
+
 int
 epub_html2text(char* html, char* output, int linelen, int indent) {
 
