@@ -1,6 +1,7 @@
 /*
  * Procedures for unzipping epub zip archives using miniz.
  */
+#include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -14,17 +15,17 @@
 #define PATHMAX 4095
 
 /* Magic bits used by zip archives. */
-static char epub_magic[] = { 0x50, 0x4B, 0x03, 0x04 };
+static uint8_t epub_magic[] = { 0x50, 0x4B, 0x03, 0x04 };
 
 static int
 _is_epub(char* filename) {
 
 	FILE* file;
-	char magic[4];
+	uint8_t magic[4];
 
 	file = fopen(filename, "r");
 
-	fread(magic, sizeof(char), sizeof(magic), file);
+	fread(magic, sizeof(uint8_t), sizeof(magic), file);
 
 	fclose(file);
 
